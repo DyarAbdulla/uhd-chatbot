@@ -46,21 +46,38 @@ st.markdown("""
         margin-top: 0.5rem;
     }
     
-    /* Tab styling */
+    /* Tab styling - FIXED TO ALWAYS SHOW */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background-color: white;
+        padding: 1rem 0;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e0e0e0;
     }
     
     .stTabs [data-baseweb="tab"] {
         background-color: #f0f2f6;
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-weight: 500;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #e8eaf0;
+        transform: translateY(-2px);
+        border-color: #667eea;
     }
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
     
     /* Button styling */
@@ -68,33 +85,63 @@ st.markdown("""
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 8px;
-        padding: 0.5rem 2rem;
+        border-radius: 10px;
+        padding: 0.6rem 2rem;
         font-weight: 600;
-        transition: transform 0.2s;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
     }
     
     .stButton button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
     }
     
     /* Input styling */
-    .stTextInput input {
-        border-radius: 8px;
+    .stTextInput input, .stSelectbox select {
+        border-radius: 10px;
         border: 2px solid #e0e0e0;
         padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
     }
     
-    .stTextInput input:focus {
+    .stTextInput input:focus, .stSelectbox select:focus {
         border-color: #667eea;
         box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
     }
     
+    .stTextInput input:hover, .stSelectbox select:hover {
+        border-color: #764ba2;
+    }
+    
     /* Success/Warning/Info boxes */
-    .stSuccess, .stWarning, .stInfo {
-        border-radius: 8px;
+    .stSuccess, .stWarning, .stInfo, .stError {
+        border-radius: 10px;
         padding: 1rem;
+        margin: 0.5rem 0;
+        border-left: 4px solid;
+    }
+    
+    .stSuccess {
+        background-color: #d4edda;
+        border-left-color: #28a745;
+    }
+    
+    .stWarning {
+        background-color: #fff3cd;
+        border-left-color: #ffc107;
+    }
+    
+    .stInfo {
+        background-color: #d1ecf1;
+        border-left-color: #17a2b8;
+    }
+    
+    .stError {
+        background-color: #f8d7da;
+        border-left-color: #dc3545;
     }
     
     /* Logo container */
@@ -109,6 +156,44 @@ st.markdown("""
         border-radius: 10px;
         border: 3px solid white;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Card styling for containers */
+    .stContainer {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .stContainer:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    
+    /* Download button styling */
+    .stDownloadButton button {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .stDownloadButton button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -501,419 +586,4 @@ def load_faq():
 
 
 def load_schedule():
-    """Load schedule data from CSV or use default"""
-    if SCHED_PATH.exists():
-        try:
-            df = _read_csv_safely(SCHED_PATH)
-            required = {"course_code", "course_name", "day",
-                        "start_time", "end_time", "hall", "lecturer"}
-            if not required.issubset(df.columns):
-                st.warning(
-                    "⚠️ 'schedule.csv' missing required columns — using default sample.")
-                return DEFAULT_SCHEDULE, "built-in"
-            if "department" not in df.columns:
-                df["department"] = "General"
-            df["day"] = df["day"].astype(str).str.title()
-            return df, "local file"
-        except Exception as e:
-            st.warning(
-                f"⚠️ Error reading schedule.csv: {e} — using default sample.")
-            return DEFAULT_SCHEDULE, "built-in"
-    return DEFAULT_SCHEDULE, "built-in"
-
-
-# Load data
-faq_df, faq_src = load_faq()
-sched_df, sched_src = load_schedule()
-
-# Status indicator
-col1, col2, col3 = st.columns([2, 2, 1])
-with col1:
-    st.caption(f"📚 FAQ Source: **{faq_src}**")
-with col2:
-    st.caption(f"📅 Schedule Source: **{sched_src}**")
-with col3:
-    st.caption(f"🕐 {datetime.now().strftime('%H:%M')}")
-
-# ================== FAQ SEARCH ENGINE ==================
-
-
-@st.cache_resource(show_spinner=False)
-def build_faq_index(df: pd.DataFrame):
-    """Build TF-IDF index for FAQ search"""
-    text = (df["question"].astype(str) + " " +
-            df["tags"].fillna("").astype(str)).str.lower()
-    vec = TfidfVectorizer(ngram_range=(1, 2), min_df=1, max_features=1000)
-    X = vec.fit_transform(text)
-    return vec, X
-
-
-faq_vec, faq_X = build_faq_index(faq_df)
-
-
-def _tokenize(s: str):
-    """Extract tokens from string"""
-    return set(re.findall(r"[a-z0-9]+", s.lower()))
-
-
-def faq_search(query: str, df: pd.DataFrame, vec, X):
-    """Search FAQ using hybrid TF-IDF and tag matching"""
-    q = query.lower().strip()
-    if not q:
-        return None, 0.0
-
-    # TF-IDF similarity
-    tfidf = cosine_similarity(vec.transform([q]), X).flatten()
-
-    # Tag overlap score
-    qtok = _tokenize(q)
-    tag_sets = df["tags"].fillna("").str.lower().apply(
-        lambda t: set(re.split(r"[;,\s]+", t.strip())))
-    overlap_counts = tag_sets.apply(lambda s: len(qtok & s)).astype(float)
-    if overlap_counts.max() > 0:
-        overlap = overlap_counts / overlap_counts.max()
-    else:
-        overlap = overlap_counts
-
-    # Combine scores (70% TF-IDF, 30% tag overlap)
-    combined = 0.7 * tfidf + 0.3 * overlap.values
-    idx = combined.argmax()
-    return int(idx), float(combined[idx])
-
-
-# ================== SCHEDULE SEARCH ==================
-DAY_MAP = {
-    "sun": "sunday", "sunday": "sunday",
-    "mon": "monday", "monday": "monday",
-    "tue": "tuesday", "tuesday": "tuesday",
-    "wed": "wednesday", "wednesday": "wednesday",
-    "thu": "thursday", "thursday": "thursday",
-    "fri": "friday", "friday": "friday",
-    "sat": "saturday", "saturday": "saturday",
-}
-
-
-def parse_day(text: str):
-    """Extract day from text"""
-    t = text.lower()
-    for k, v in DAY_MAP.items():
-        if k in t:
-            return v.title()
-    return None
-
-
-def extract_code(text: str):
-    """Extract course code from text"""
-    m = re.search(r"\b([A-Za-z]{2,5})\s?-?\s?(\d{2,3})\b", text)
-    return (m.group(1).upper() + m.group(2)) if m else None
-
-
-STOP_WORDS = {"for", "the", "and", "of", "in", "on",
-              "class", "course", "where", "when", "is", "what"}
-
-
-def _words(s: str):
-    """Extract meaningful words"""
-    return [w for w in re.findall(r"[a-z]+", s.lower()) if len(w) >= 3 and w not in STOP_WORDS]
-
-
-def schedule_query(text: str, df: pd.DataFrame):
-    """Search schedule using multiple strategies"""
-    q = str(text).strip().lower()
-    if not q:
-        return None, "Please type a course name/code or include a day."
-
-    day = parse_day(q)
-    code = extract_code(q)
-    cand = df.copy()
-
-    # Filter by day if mentioned
-    if day:
-        cand = cand[cand["day"].str.lower() == day.lower()]
-
-    # Filter by course code if found
-    if code:
-        cc = cand["course_code"].astype(str).str.replace(
-            r"[\s-]", "", regex=True).str.upper()
-        direct = cand[cc == code.upper()]
-        if not direct.empty:
-            cand = direct
-
-    if cand.empty:
-        cand = df.copy()
-
-    # Keyword matching
-    qwords = _words(q)
-    if qwords:
-        def hits(row):
-            name = str(row["course_name"]).lower()
-            return sum(1 for w in qwords if w in name)
-
-        cand["_hits"] = cand.apply(hits, axis=1)
-        top = cand["_hits"].max()
-        if top and top > 0:
-            r = cand[cand["_hits"] == top].iloc[0]
-            msg = f"**{r['course_code']}** – {r['course_name']}\n\n📅 **{r['day']}** | ⏰ {r['start_time']} - {r['end_time']} | 🏢 {r['hall']} | 👨‍🏫 {r['lecturer']}"
-            return r, msg
-        cand = cand.drop(columns=["_hits"], errors="ignore")
-
-    # Fallback to TF-IDF
-    corpus = (cand["course_code"].astype(str) + " " +
-              cand["course_name"].astype(str)).tolist()
-    v = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-    Xc = v.fit_transform(corpus)
-    sim = cosine_similarity(v.transform([q]), Xc).flatten()
-    r = cand.iloc[sim.argmax()]
-    msg = f"**{r['course_code']}** – {r['course_name']}\n\n📅 **{r['day']}** | ⏰ {r['start_time']} - {r['end_time']} | 🏢 {r['hall']} | 👨‍🏫 {r['lecturer']}"
-    return r, msg
-
-
-# ================== UI TABS ==================
-tab1, tab2, tab3 = st.tabs(["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable"])
-
-# FAQ TAB
-with tab1:
-    st.markdown("### Ask a Question")
-    st.markdown(
-        "*Get answers about library, registrar, wifi, printing, and more.*")
-
-    q = st.text_input("Type your question here...", key="faq_q",
-                      placeholder="e.g., Where is the library?")
-
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        ask_btn = st.button("🔍 Ask", key="faq_btn", use_container_width=True)
-
-    if ask_btn:
-        if not q.strip():
-            st.info("ℹ️ Please enter a question.")
-        else:
-            with st.spinner("Searching..."):
-                idx, score = faq_search(q, faq_df, faq_vec, faq_X)
-                if score > 0.25:
-                    st.success(f"✅ Match found (confidence: {score:.0%})")
-                    st.markdown("**Answer:**")
-                    st.info(faq_df.loc[idx, "answer"])
-                else:
-                    st.warning(
-                        "⚠️ Sorry, I couldn't find a good match. Try rephrasing or being more specific!")
-
-    # Show sample questions
-    with st.expander("📋 Sample Questions"):
-        st.markdown("- Where is the main library?")
-        st.markdown("- How do I get my student ID?")
-        st.markdown("- What is the Wi-Fi network?")
-        st.markdown("- Where can I print documents?")
-        st.markdown("- How do I register for courses?")
-
-# SCHEDULE TAB
-with tab2:
-    st.markdown("### Find a Class")
-    st.markdown("*Search for a specific course by name, code, or day*")
-
-    # Department filter
-    depts = sorted([str(d).strip() for d in sched_df["department"].dropna().unique()
-                    if str(d).strip() and str(d).lower() != "nan"])
-    dept_choice = st.selectbox("Filter by Department:", [
-                               "All Departments"] + depts, key="dept_select")
-
-    active_df = sched_df if dept_choice == "All Departments" else sched_df[
-        sched_df["department"] == dept_choice]
-
-    st.markdown("---")
-    st.info("💡 **Tip:** For viewing all classes, use the '📋 Full Timetable' tab above!")
-
-    qs = st.text_input("Ask about a class...", key="sched_q",
-                       placeholder="e.g., Problem Solving, AI-DS, Tuesday classes")
-
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        ask_sched_btn = st.button(
-            "🔍 Search", key="sched_btn", use_container_width=True)
-
-    if ask_sched_btn:
-        if not qs.strip():
-            st.info("ℹ️ Please enter a course name or code.")
-        else:
-            with st.spinner("Searching schedule..."):
-                # Search for matching courses
-                q_lower = qs.lower()
-
-                # Find all courses that match the search
-                matches = active_df[
-                    active_df["course_name"].str.lower().str.contains(q_lower, na=False) |
-                    active_df["course_code"].str.lower().str.contains(q_lower, na=False) |
-                    active_df["day"].str.lower().str.contains(q_lower, na=False) |
-                    active_df["lecturer"].str.lower(
-                    ).str.contains(q_lower, na=False)
-                ]
-
-                if not matches.empty:
-                    # Group by unique courses
-                    unique_courses = matches.groupby(
-                        'course_code').first().reset_index()
-
-                    st.success(
-                        f"✅ Found {len(unique_courses)} course(s) matching your search!")
-                    st.markdown("---")
-
-                    # Display each unique course
-                    for _, course in unique_courses.iterrows():
-                        st.markdown(
-                            f"### {course['course_code']} – {course['course_name']}")
-                        st.markdown(
-                            f"**📚 Department:** {course['department']}")
-
-                        # Get all sessions for this course
-                        course_sessions = matches[matches['course_code']
-                                                  == course['course_code']].sort_values('day')
-
-                        st.markdown("**📅 Schedule:**")
-                        for _, session in course_sessions.iterrows():
-                            st.markdown(
-                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
-
-                        st.markdown("---")
-                else:
-                    st.warning(
-                        "⚠️ No courses found matching your search. Try different keywords!")
-
-# TIMETABLE TAB - FIXED VERSION
-with tab3:
-    st.markdown("### 📋 Complete University Timetable")
-    st.markdown("*View all classes across all departments*")
-
-    # Filter options - Better column sizing
-    col1, col2, col3 = st.columns([1.2, 1, 0.8])
-
-    with col1:
-        # Department filter
-        all_depts = ["All Departments"] + sorted([
-            str(d).strip() for d in sched_df["department"].dropna().unique()
-            if str(d).strip() and str(d).lower() != "nan"
-        ])
-        dept_filter = st.selectbox("Department:", all_depts, key="tt_dept")
-
-    with col2:
-        # Day filter - PROPERLY FIXED: No duplicates
-        unique_days = list(set(sched_df["day"].dropna().tolist()))
-        # Define proper day order
-        day_order = ["Saturday", "Sunday", "Monday",
-                     "Tuesday", "Wednesday", "Thursday", "Friday"]
-        # Sort days according to day_order, only include days that exist in data
-        sorted_days = [day for day in day_order if day in unique_days]
-        # Create options list without duplication
-        day_options = ["All Days"] + sorted_days
-
-        # Use selectbox with proper configuration
-        day_filter = st.selectbox(
-            "Day:",
-            options=day_options,
-            key="tt_day"
-        )
-
-    with col3:
-        # Sort option
-        sort_option = st.selectbox(
-            "Sort by:", ["Time", "Course Code", "Department"], key="tt_sort")
-
-    # Apply filters
-    filtered_df = sched_df.copy()
-
-    if dept_filter != "All Departments":
-        filtered_df = filtered_df[filtered_df["department"] == dept_filter]
-
-    if day_filter != "All Days":
-        filtered_df = filtered_df[filtered_df["day"] == day_filter]
-
-    # Sort
-    if sort_option == "Time":
-        filtered_df = filtered_df.sort_values(["day", "start_time"])
-    elif sort_option == "Course Code":
-        filtered_df = filtered_df.sort_values("course_code")
-    else:  # Department
-        filtered_df = filtered_df.sort_values(["department", "start_time"])
-
-    # Display count
-    st.markdown(f"**Showing {len(filtered_df)} classes**")
-    st.markdown("---")
-
-    # Display as cards grouped by day
-    if not filtered_df.empty:
-        if day_filter == "All Days":
-            # Group by day - use proper day order
-            day_order = ["Saturday", "Sunday", "Monday",
-                         "Tuesday", "Wednesday", "Thursday", "Friday"]
-            for day in day_order:
-                day_classes = filtered_df[filtered_df["day"] == day]
-                if not day_classes.empty:
-                    st.markdown(f"### 📅 {day}")
-
-                    # Display each class
-                    for _, row in day_classes.iterrows():
-                        with st.container():
-                            col_a, col_b, col_c, col_d = st.columns(
-                                [2, 2, 1.5, 1.5])
-
-                            with col_a:
-                                st.markdown(f"**{row['course_code']}**")
-                                st.caption(row['course_name'])
-
-                            with col_b:
-                                st.markdown(f"👨‍🏫 {row['lecturer']}")
-                                st.caption(f"📚 {row['department']}")
-
-                            with col_c:
-                                st.markdown(f"⏰ {row['start_time']}")
-                                st.caption(f"→ {row['end_time']}")
-
-                            with col_d:
-                                st.markdown(f"🏢 **{row['hall']}**")
-
-                        st.markdown("---")
-        else:
-            # Single day view
-            for _, row in filtered_df.iterrows():
-                with st.container():
-                    col_a, col_b, col_c, col_d = st.columns([2, 2, 1.5, 1.5])
-
-                    with col_a:
-                        st.markdown(f"**{row['course_code']}**")
-                        st.caption(row['course_name'])
-
-                    with col_b:
-                        st.markdown(f"👨‍🏫 {row['lecturer']}")
-                        st.caption(f"📚 {row['department']}")
-
-                    with col_c:
-                        st.markdown(f"⏰ {row['start_time']}")
-                        st.caption(f"→ {row['end_time']}")
-
-                    with col_d:
-                        st.markdown(f"🏢 **{row['hall']}**")
-
-                st.markdown("---")
-
-        # Download option
-        st.markdown("### 📥 Export Timetable")
-        csv = filtered_df.to_csv(index=False)
-        st.download_button(
-            label="Download as CSV",
-            data=csv,
-            file_name=f"uhd_timetable_{day_filter.lower().replace(' ', '_')}.csv",
-            mime="text/csv",
-        )
-
-        # Display as table option
-        with st.expander("📊 View as Table"):
-            st.dataframe(
-                filtered_df[["course_code", "course_name", "day",
-                             "start_time", "end_time", "hall", "lecturer", "department"]],
-                hide_index=True
-            )
-    else:
-        st.info("No classes found with the selected filters.")
-
-# Footer
-st.markdown("---")
-st.caption("© 2024 University of Human Development | Festival Demo Version")
+    """Load schedule data from

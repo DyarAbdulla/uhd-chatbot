@@ -21,7 +21,12 @@ st.markdown("""
     /* Main container styling */
     .main {
         padding-top: 2rem;
-        background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+        background-color: #ffffff;
+    }
+    
+    /* Override Streamlit's default dark background */
+    .stApp {
+        background-color: #ffffff;
     }
     
     /* Header styling */

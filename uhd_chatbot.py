@@ -21,12 +21,22 @@ st.markdown("""
     /* Main container styling */
     .main {
         padding-top: 2rem;
-        background-color: #ffffff;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
     }
     
     /* Override Streamlit's default dark background */
     .stApp {
-        background-color: #ffffff;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    /* Force all Streamlit elements to have proper styling */
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    [data-testid="stHeader"] {
+        background: transparent;
     }
     
     /* Header styling */
@@ -56,53 +66,57 @@ st.markdown("""
     
     /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-        background-color: #f8f9fa;
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        gap: 12px;
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        margin-bottom: 20px;
     }
     
     .stTabs [data-baseweb="tab"] {
         background-color: #ffffff;
-        border-radius: 10px;
-        padding: 12px 24px;
+        border-radius: 12px;
+        padding: 14px 28px;
         font-weight: 600;
-        color: #212529;
-        border: 2px solid #dee2e6;
+        color: #2d3748;
+        border: 2px solid #e2e8f0;
         transition: all 0.3s ease;
+        font-size: 16px;
     }
     
     .stTabs [data-baseweb="tab"]:hover {
-        background-color: #e9ecef;
+        background-color: #edf2f7;
         border-color: #667eea;
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
     }
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white !important;
         border-color: #667eea;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
     
     /* Content cards */
     .content-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        margin-bottom: 1.5rem;
-        border: 1px solid #dee2e6;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.8);
     }
     
     .content-card h3 {
-        color: #212529 !important;
-        margin-bottom: 0.5rem;
+        color: #2d3748 !important;
+        margin-bottom: 1rem;
+        font-size: 1.75rem;
     }
     
     .content-card p, .content-card div {
-        color: #212529 !important;
+        color: #2d3748 !important;
     }
     
     /* Button styling */
@@ -124,45 +138,69 @@ st.markdown("""
     
     /* Input styling */
     .stTextInput input, .stSelectbox select {
-        border-radius: 10px;
-        border: 2px solid #ced4da;
-        padding: 0.75rem;
+        border-radius: 12px;
+        border: 2px solid #cbd5e0;
+        padding: 0.875rem;
         transition: all 0.3s ease;
-        background-color: #ffffff;
-        color: #212529;
+        background-color: #ffffff !important;
+        color: #2d3748 !important;
+        font-size: 16px;
     }
     
     .stTextInput input:focus, .stSelectbox select:focus {
         border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        background-color: #ffffff !important;
+        outline: none;
     }
     
     .stTextInput label, .stSelectbox label {
-        color: #212529 !important;
+        color: #2d3748 !important;
         font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+    
+    /* Fix selectbox dropdown */
+    .stSelectbox div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #2d3748 !important;
+        border-color: #cbd5e0 !important;
+    }
+    
+    /* Fix selectbox options */
+    [role="option"] {
+        background-color: #ffffff !important;
+        color: #2d3748 !important;
+    }
+    
+    [role="option"]:hover {
+        background-color: #edf2f7 !important;
     }
     
     /* Success/Warning/Info boxes */
     .stSuccess {
-        background-color: #d4edda;
+        background-color: #d4edda !important;
         border-left: 5px solid #28a745;
-        border-radius: 10px;
-        padding: 1rem;
+        border-radius: 12px;
+        padding: 1.25rem;
+        color: #155724 !important;
     }
     
     .stWarning {
-        background-color: #fff3cd;
+        background-color: #fff3cd !important;
         border-left: 5px solid #ffc107;
-        border-radius: 10px;
-        padding: 1rem;
+        border-radius: 12px;
+        padding: 1.25rem;
+        color: #856404 !important;
     }
     
     .stInfo {
-        background-color: #d1ecf1;
+        background-color: #d1ecf1 !important;
         border-left: 5px solid #17a2b8;
-        border-radius: 10px;
-        padding: 1rem;
+        border-radius: 12px;
+        padding: 1.25rem;
+        color: #0c5460 !important;
     }
     
     /* Logo container */
@@ -181,28 +219,32 @@ st.markdown("""
     
     /* Class card styling */
     .class-card {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         border-left: 5px solid #667eea;
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
     }
     
     .class-card:hover {
-        transform: translateX(5px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        transform: translateX(8px);
+        box-shadow: 0 6px 25px rgba(102, 126, 234, 0.25);
+        border-left-width: 7px;
     }
     
     /* Status badge */
     .status-badge {
-        background: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0.6rem 1.25rem;
+        border-radius: 25px;
         display: inline-block;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        font-size: 0.9rem;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2d3748;
+        border: 2px solid rgba(102, 126, 234, 0.2);
     }
     
     /* Footer */
@@ -224,37 +266,56 @@ st.markdown("""
     
     /* Section headers */
     h1, h2, h3 {
-        color: #212529 !important;
+        color: #2d3748 !important;
+        font-weight: 700;
     }
     
-    /* Regular text */
-    p, div, span, label {
-        color: #212529 !important;
+    /* Regular text - Force dark color */
+    p, div, span, label, li {
+        color: #2d3748 !important;
     }
     
     /* Markdown text */
     .markdown-text-container {
-        color: #212529 !important;
+        color: #2d3748 !important;
     }
     
     /* Streamlit elements */
     .stMarkdown, .element-container {
-        color: #212529 !important;
+        color: #2d3748 !important;
     }
     
     /* Text areas */
     .stTextArea textarea {
-        color: #212529 !important;
+        color: #2d3748 !important;
+        background-color: white !important;
+        border: 2px solid #cbd5e0 !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #2d3748 !important;
+        border: 2px solid #e2e8f0;
+    }
+    
+    .streamlit-expanderContent {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        border: 2px solid #e2e8f0;
+        border-top: none;
+        color: #2d3748 !important;
+    }
+    
+    /* Dataframe styling */
+    .stDataFrame {
         background-color: white !important;
     }
     
-    /* All text elements */
-    * {
-        color: inherit;
-    }
-    
-    .main * {
-        color: #212529;
+    .stDataFrame table {
+        color: #2d3748 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -769,9 +830,10 @@ tab1, tab2, tab3, tab4 = st.tabs(["❓ FAQ", "📅 Class Schedule", "📋 Full T
 
 # ========== FAQ TAB ==========
 with tab1:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### 📚 Ask a Question")
     st.write("*Get answers about library, registrar, wifi, printing, and more.*")
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
 
     q = st.text_input("Type your question here...", key="faq_q",
                       placeholder="e.g., Where is the library?")
@@ -803,12 +865,14 @@ with tab1:
         st.markdown("- How do I register for courses?")
         st.markdown("- Where are the AI labs located?")
         st.markdown("- Who teaches Data Science?")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== SCHEDULE TAB ==========
 with tab2:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### 🔍 Find a Class")
     st.write("*Search for a specific course by name, code, or day*")
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # Department filter
     depts = sorted([str(d).strip() for d in sched_df["department"].dropna().unique()
@@ -865,12 +929,14 @@ with tab2:
                         st.markdown("---")
                 else:
                     st.warning("⚠️ No courses found matching your search. Try different keywords!")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== TIMETABLE TAB ==========
 with tab3:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### 📋 Complete University Timetable")
     st.write("*View all classes across all departments*")
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # Filter options
     col1, col2, col3 = st.columns([1.2, 1, 0.8])
@@ -991,9 +1057,11 @@ with tab3:
             )
     else:
         st.info("No classes found with the selected filters.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== ABOUT TAB ==========
 with tab4:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### ℹ️ About UHD AI Chatbot")
     
     st.markdown("""

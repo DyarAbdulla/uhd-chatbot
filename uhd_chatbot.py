@@ -21,46 +21,70 @@ st.markdown("""
     /* Main container styling */
     .main {
         padding-top: 2rem;
+        background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
     }
     
     /* Header styling */
     .header-container {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 15px;
+        padding: 2.5rem;
+        border-radius: 20px;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
     
     .university-name {
         color: white;
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: bold;
         margin: 0;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 0.5px;
     }
     
     .subtitle {
         color: #f0f0f0;
         font-size: 1.3rem;
         margin-top: 0.5rem;
+        font-weight: 300;
     }
     
     /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 10px;
+        background-color: white;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
     .stTabs [data-baseweb="tab"] {
-        background-color: #f0f2f6;
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-weight: 500;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: 600;
+        color: #495057;
+        transition: all 0.3s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
     }
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Content cards */
+    .content-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 1.5rem;
     }
     
     /* Button styling */
@@ -68,32 +92,50 @@ st.markdown("""
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 8px;
-        padding: 0.5rem 2rem;
+        border-radius: 10px;
+        padding: 0.6rem 2.5rem;
         font-weight: 600;
-        transition: transform 0.2s;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
     
     .stButton button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
     
     /* Input styling */
-    .stTextInput input {
-        border-radius: 8px;
+    .stTextInput input, .stSelectbox select {
+        border-radius: 10px;
         border: 2px solid #e0e0e0;
         padding: 0.75rem;
+        transition: all 0.3s ease;
     }
     
-    .stTextInput input:focus {
+    .stTextInput input:focus, .stSelectbox select:focus {
         border-color: #667eea;
         box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
     }
     
     /* Success/Warning/Info boxes */
-    .stSuccess, .stWarning, .stInfo {
-        border-radius: 8px;
+    .stSuccess {
+        background-color: #d4edda;
+        border-left: 5px solid #28a745;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+    
+    .stWarning {
+        background-color: #fff3cd;
+        border-left: 5px solid #ffc107;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+    
+    .stInfo {
+        background-color: #d1ecf1;
+        border-left: 5px solid #17a2b8;
+        border-radius: 10px;
         padding: 1rem;
     }
     
@@ -106,9 +148,57 @@ st.markdown("""
     }
     
     .logo-img {
+        border-radius: 15px;
+        border: 4px solid white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Class card styling */
+    .class-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-left: 5px solid #667eea;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .class-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Status badge */
+    .status-badge {
+        background: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        display: inline-block;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        font-size: 0.9rem;
+    }
+    
+    /* Footer */
+    .footer {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+        border-top: 2px solid #e9ecef;
+        margin-top: 3rem;
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: #f8f9fa;
         border-radius: 10px;
-        border: 3px solid white;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+    }
+    
+    /* Section headers */
+    h1, h2, h3 {
+        color: #495057;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -172,7 +262,6 @@ else:
         <p class="subtitle">AI FAQ & Class Schedule Chatbot</p>
     </div>
     """, unsafe_allow_html=True)
-    st.info("💡 **Tip:** Place your university logo as 'uhd_logo.png' or 'uhd_logo.jpg' in the same folder as this script to display it.")
 
 # ================== FILE PATHS ==================
 FAQ_PATH = SCRIPT_DIR / "faq.csv"
@@ -529,11 +618,13 @@ sched_df, sched_src = load_schedule()
 # Status indicator
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
-    st.caption(f"📚 FAQ Source: **{faq_src}**")
+    st.markdown(f'<span class="status-badge">📚 FAQ: {faq_src}</span>', unsafe_allow_html=True)
 with col2:
-    st.caption(f"📅 Schedule Source: **{sched_src}**")
+    st.markdown(f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    st.caption(f"🕐 {datetime.now().strftime('%H:%M')}")
+    st.markdown(f'<span class="status-badge">🕐 {datetime.now().strftime("%H:%M")}</span>', unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ================== FAQ SEARCH ENGINE ==================
 
@@ -617,65 +708,14 @@ def _words(s: str):
     return [w for w in re.findall(r"[a-z]+", s.lower()) if len(w) >= 3 and w not in STOP_WORDS]
 
 
-def schedule_query(text: str, df: pd.DataFrame):
-    """Search schedule using multiple strategies"""
-    q = str(text).strip().lower()
-    if not q:
-        return None, "Please type a course name/code or include a day."
+# ================== UI TABS - ALL VISIBLE ==================
+tab1, tab2, tab3, tab4 = st.tabs(["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable", "ℹ️ About"])
 
-    day = parse_day(q)
-    code = extract_code(q)
-    cand = df.copy()
-
-    # Filter by day if mentioned
-    if day:
-        cand = cand[cand["day"].str.lower() == day.lower()]
-
-    # Filter by course code if found
-    if code:
-        cc = cand["course_code"].astype(str).str.replace(
-            r"[\s-]", "", regex=True).str.upper()
-        direct = cand[cc == code.upper()]
-        if not direct.empty:
-            cand = direct
-
-    if cand.empty:
-        cand = df.copy()
-
-    # Keyword matching
-    qwords = _words(q)
-    if qwords:
-        def hits(row):
-            name = str(row["course_name"]).lower()
-            return sum(1 for w in qwords if w in name)
-
-        cand["_hits"] = cand.apply(hits, axis=1)
-        top = cand["_hits"].max()
-        if top and top > 0:
-            r = cand[cand["_hits"] == top].iloc[0]
-            msg = f"**{r['course_code']}** – {r['course_name']}\n\n📅 **{r['day']}** | ⏰ {r['start_time']} - {r['end_time']} | 🏢 {r['hall']} | 👨‍🏫 {r['lecturer']}"
-            return r, msg
-        cand = cand.drop(columns=["_hits"], errors="ignore")
-
-    # Fallback to TF-IDF
-    corpus = (cand["course_code"].astype(str) + " " +
-              cand["course_name"].astype(str)).tolist()
-    v = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-    Xc = v.fit_transform(corpus)
-    sim = cosine_similarity(v.transform([q]), Xc).flatten()
-    r = cand.iloc[sim.argmax()]
-    msg = f"**{r['course_code']}** – {r['course_name']}\n\n📅 **{r['day']}** | ⏰ {r['start_time']} - {r['end_time']} | 🏢 {r['hall']} | 👨‍🏫 {r['lecturer']}"
-    return r, msg
-
-
-# ================== UI TABS ==================
-tab1, tab2, tab3 = st.tabs(["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable"])
-
-# FAQ TAB
+# ========== FAQ TAB ==========
 with tab1:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### Ask a Question")
-    st.markdown(
-        "*Get answers about library, registrar, wifi, printing, and more.*")
+    st.markdown("*Get answers about library, registrar, wifi, printing, and more.*")
 
     q = st.text_input("Type your question here...", key="faq_q",
                       placeholder="e.g., Where is the library?")
@@ -705,9 +745,13 @@ with tab1:
         st.markdown("- What is the Wi-Fi network?")
         st.markdown("- Where can I print documents?")
         st.markdown("- How do I register for courses?")
+        st.markdown("- Where are the AI labs located?")
+        st.markdown("- Who teaches Data Science?")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# SCHEDULE TAB
+# ========== SCHEDULE TAB ==========
 with tab2:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### Find a Class")
     st.markdown("*Search for a specific course by name, code, or day*")
 
@@ -721,7 +765,6 @@ with tab2:
         sched_df["department"] == dept_choice]
 
     st.markdown("---")
-    st.info("💡 **Tip:** For viewing all classes, use the '📋 Full Timetable' tab above!")
 
     qs = st.text_input("Ask about a class...", key="sched_q",
                        placeholder="e.g., Problem Solving, AI-DS, Tuesday classes")
@@ -744,46 +787,40 @@ with tab2:
                     active_df["course_name"].str.lower().str.contains(q_lower, na=False) |
                     active_df["course_code"].str.lower().str.contains(q_lower, na=False) |
                     active_df["day"].str.lower().str.contains(q_lower, na=False) |
-                    active_df["lecturer"].str.lower(
-                    ).str.contains(q_lower, na=False)
+                    active_df["lecturer"].str.lower().str.contains(q_lower, na=False)
                 ]
 
                 if not matches.empty:
                     # Group by unique courses
-                    unique_courses = matches.groupby(
-                        'course_code').first().reset_index()
+                    unique_courses = matches.groupby('course_code').first().reset_index()
 
-                    st.success(
-                        f"✅ Found {len(unique_courses)} course(s) matching your search!")
+                    st.success(f"✅ Found {len(unique_courses)} course(s) matching your search!")
                     st.markdown("---")
 
                     # Display each unique course
                     for _, course in unique_courses.iterrows():
-                        st.markdown(
-                            f"### {course['course_code']} – {course['course_name']}")
-                        st.markdown(
-                            f"**📚 Department:** {course['department']}")
+                        st.markdown(f"### {course['course_code']} – {course['course_name']}")
+                        st.markdown(f"**📚 Department:** {course['department']}")
 
                         # Get all sessions for this course
-                        course_sessions = matches[matches['course_code']
-                                                  == course['course_code']].sort_values('day')
+                        course_sessions = matches[matches['course_code'] == course['course_code']].sort_values('day')
 
                         st.markdown("**📅 Schedule:**")
                         for _, session in course_sessions.iterrows():
-                            st.markdown(
-                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
+                            st.markdown(f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
 
                         st.markdown("---")
                 else:
-                    st.warning(
-                        "⚠️ No courses found matching your search. Try different keywords!")
+                    st.warning("⚠️ No courses found matching your search. Try different keywords!")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# TIMETABLE TAB - FIXED VERSION
+# ========== TIMETABLE TAB ==========
 with tab3:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### 📋 Complete University Timetable")
     st.markdown("*View all classes across all departments*")
 
-    # Filter options - Better column sizing
+    # Filter options
     col1, col2, col3 = st.columns([1.2, 1, 0.8])
 
     with col1:
@@ -795,27 +832,16 @@ with tab3:
         dept_filter = st.selectbox("Department:", all_depts, key="tt_dept")
 
     with col2:
-        # Day filter - PROPERLY FIXED: No duplicates
+        # Day filter
         unique_days = list(set(sched_df["day"].dropna().tolist()))
-        # Define proper day order
-        day_order = ["Saturday", "Sunday", "Monday",
-                     "Tuesday", "Wednesday", "Thursday", "Friday"]
-        # Sort days according to day_order, only include days that exist in data
+        day_order = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         sorted_days = [day for day in day_order if day in unique_days]
-        # Create options list without duplication
         day_options = ["All Days"] + sorted_days
-
-        # Use selectbox with proper configuration
-        day_filter = st.selectbox(
-            "Day:",
-            options=day_options,
-            key="tt_day"
-        )
+        day_filter = st.selectbox("Day:", options=day_options, key="tt_day")
 
     with col3:
         # Sort option
-        sort_option = st.selectbox(
-            "Sort by:", ["Time", "Course Code", "Department"], key="tt_sort")
+        sort_option = st.selectbox("Sort by:", ["Time", "Course Code", "Department"], key="tt_sort")
 
     # Apply filters
     filtered_df = sched_df.copy()
@@ -831,7 +857,7 @@ with tab3:
         filtered_df = filtered_df.sort_values(["day", "start_time"])
     elif sort_option == "Course Code":
         filtered_df = filtered_df.sort_values("course_code")
-    else:  # Department
+    else:
         filtered_df = filtered_df.sort_values(["department", "start_time"])
 
     # Display count
@@ -841,64 +867,64 @@ with tab3:
     # Display as cards grouped by day
     if not filtered_df.empty:
         if day_filter == "All Days":
-            # Group by day - use proper day order
-            day_order = ["Saturday", "Sunday", "Monday",
-                         "Tuesday", "Wednesday", "Thursday", "Friday"]
+            day_order = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
             for day in day_order:
                 day_classes = filtered_df[filtered_df["day"] == day]
                 if not day_classes.empty:
                     st.markdown(f"### 📅 {day}")
 
-                    # Display each class
                     for _, row in day_classes.iterrows():
-                        with st.container():
-                            col_a, col_b, col_c, col_d = st.columns(
-                                [2, 2, 1.5, 1.5])
-
-                            with col_a:
-                                st.markdown(f"**{row['course_code']}**")
-                                st.caption(row['course_name'])
-
-                            with col_b:
-                                st.markdown(f"👨‍🏫 {row['lecturer']}")
-                                st.caption(f"📚 {row['department']}")
-
-                            with col_c:
-                                st.markdown(f"⏰ {row['start_time']}")
-                                st.caption(f"→ {row['end_time']}")
-
-                            with col_d:
-                                st.markdown(f"🏢 **{row['hall']}**")
-
-                        st.markdown("---")
+                        st.markdown(f"""
+                        <div class="class-card">
+                            <div style="display: grid; grid-template-columns: 2fr 2fr 1.5fr 1.5fr; gap: 1rem;">
+                                <div>
+                                    <strong style="font-size: 1.1rem; color: #667eea;">{row['course_code']}</strong><br>
+                                    <span style="color: #6c757d;">{row['course_name']}</span>
+                                </div>
+                                <div>
+                                    <strong>👨‍🏫 {row['lecturer']}</strong><br>
+                                    <span style="color: #6c757d;">📚 {row['department']}</span>
+                                </div>
+                                <div>
+                                    <strong>⏰ {row['start_time']}</strong><br>
+                                    <span style="color: #6c757d;">→ {row['end_time']}</span>
+                                </div>
+                                <div>
+                                    <strong>🏢 {row['hall']}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
         else:
-            # Single day view
             for _, row in filtered_df.iterrows():
-                with st.container():
-                    col_a, col_b, col_c, col_d = st.columns([2, 2, 1.5, 1.5])
-
-                    with col_a:
-                        st.markdown(f"**{row['course_code']}**")
-                        st.caption(row['course_name'])
-
-                    with col_b:
-                        st.markdown(f"👨‍🏫 {row['lecturer']}")
-                        st.caption(f"📚 {row['department']}")
-
-                    with col_c:
-                        st.markdown(f"⏰ {row['start_time']}")
-                        st.caption(f"→ {row['end_time']}")
-
-                    with col_d:
-                        st.markdown(f"🏢 **{row['hall']}**")
-
-                st.markdown("---")
+                st.markdown(f"""
+                <div class="class-card">
+                    <div style="display: grid; grid-template-columns: 2fr 2fr 1.5fr 1.5fr; gap: 1rem;">
+                        <div>
+                            <strong style="font-size: 1.1rem; color: #667eea;">{row['course_code']}</strong><br>
+                            <span style="color: #6c757d;">{row['course_name']}</span>
+                        </div>
+                        <div>
+                            <strong>👨‍🏫 {row['lecturer']}</strong><br>
+                            <span style="color: #6c757d;">📚 {row['department']}</span>
+                        </div>
+                        <div>
+                            <strong>⏰ {row['start_time']}</strong><br>
+                            <span style="color: #6c757d;">→ {row['end_time']}</span>
+                        </div>
+                        <div>
+                            <strong>🏢 {row['hall']}</strong>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
         # Download option
+        st.markdown("---")
         st.markdown("### 📥 Export Timetable")
         csv = filtered_df.to_csv(index=False)
         st.download_button(
-            label="Download as CSV",
+            label="📥 Download as CSV",
             data=csv,
             file_name=f"uhd_timetable_{day_filter.lower().replace(' ', '_')}.csv",
             mime="text/csv",
@@ -913,7 +939,104 @@ with tab3:
             )
     else:
         st.info("No classes found with the selected filters.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== ABOUT TAB ==========
+with tab4:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
+    st.markdown("### ℹ️ About UHD AI Chatbot")
+    
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                padding: 2rem; border-radius: 15px; color: white; margin: 1rem 0;">
+        <h2 style="color: white; margin-top: 0;">🎓 UHD AI Chatbot</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6;">
+            An intelligent assistant for the <strong>University of Human Development</strong>, 
+            created to help students and staff quickly find answers about the library, 
+            class schedules, registrar office, printing, and other university services — 
+            all in one simple and friendly interface.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### 👥 Development Team")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+            <div style="font-size: 3rem;">👨‍💻</div>
+            <h4 style="color: #667eea; margin: 0.5rem 0;">Dyar Abdulla</h4>
+            <p style="color: #6c757d; margin: 0;">Developer</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+            <div style="font-size: 3rem;">👨‍💻</div>
+            <h4 style="color: #667eea; margin: 0.5rem 0;">Anas Sarkawt</h4>
+            <p style="color: #6c757d; margin: 0;">Developer</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+            <div style="font-size: 3rem;">👨‍💻</div>
+            <h4 style="color: #667eea; margin: 0.5rem 0;">Drood Muhammed</h4>
+            <p style="color: #6c757d; margin: 0;">Developer</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    st.markdown("### ✨ Features")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        - 🔍 **Smart FAQ Search** - Ask questions about university services
+        - 📅 **Class Schedule Finder** - Search courses by name, code, or day
+        - 📋 **Complete Timetable** - View all classes with filters
+        """)
+    
+    with col2:
+        st.markdown("""
+        - 🎯 **AI-Powered Matching** - TF-IDF algorithm for accurate results
+        - 📥 **Export Feature** - Download schedules as CSV
+        - 🎨 **Beautiful Interface** - Modern and user-friendly design
+        """)
+    
+    st.markdown("---")
+    
+    st.markdown("### 📊 Data Sources")
+    st.markdown(f"""
+    - **FAQ Database:** {faq_src} ({len(faq_df)} questions)
+    - **Schedule Database:** {sched_src} ({len(sched_df)} classes)
+    """)
+    
+    st.markdown("---")
+    
+    st.markdown("### 💡 How to Use")
+    st.markdown("""
+    1. **FAQ Tab**: Type your question about university services
+    2. **Class Schedule Tab**: Search for specific courses
+    3. **Full Timetable Tab**: Browse all classes with filters
+    4. **About Tab**: Learn more about this chatbot
+    """)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
-st.markdown("---")
-st.caption("© 2024 University of Human Development | Festival Demo Version")
+st.markdown("""
+<div class="footer">
+    <p><strong>© 2024 University of Human Development</strong></p>
+    <p>Festival Demo Version | Developed with ❤️ by Dyar Abdulla, Anas Sarkawt & Drood Muhammed</p>
+</div>
+""", unsafe_allow_html=True)

@@ -466,7 +466,7 @@ SCHED_PATH = SCRIPT_DIR / "schedule.csv"
 DEFAULT_FAQ = pd.DataFrame([
     # General University Questions
     ["Where is the main library?",
-     "The main library is next to the Administrative Building (north gate). Open 8:30–18:00 Sat–Thu.",
+     "The Main library under building  (C) Open 8:30–18:00 Sat–Thu.",
      "library;location;books;study"],
     ["How do I get my student ID?",
      "Go to the Registrar Office with your admission letter + one photo. IDs issued 9:00–14:00.",
@@ -492,7 +492,7 @@ DEFAULT_FAQ = pd.DataFrame([
 
     # AI & Data Science Questions
     ["Where are the AI labs located?",
-     "AI and Data Science labs (Lab 2, Lab 3, Lab 4, Lab 5) are in the Technology Building. Lab schedules are posted outside each lab.",
+     "AI and Data Science labs (Lab 2, Lab 3, Lab 4, Lab 5) are in the Building (G). Lab schedules are posted outside each lab.",
      "ai;artificial intelligence;data science;labs;location;computer labs"],
     ["What software do I need for AI courses?",
      "For AI courses, you'll need Python, Jupyter Notebook, and various libraries (TensorFlow, PyTorch, scikit-learn). Install instructions are provided in the first class.",
@@ -568,14 +568,11 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "Hall A11", "M Dana", "Artificial Intelligence"],
 
     # Monday - Group A1
-    ["AI-DS", "Problem Solving and Algorithms", "Monday", "09:00",
-        "11:00", "Lab 2", "M Shima - Group A1", "Artificial Intelligence"],
     ["AI-DS", "Data Communications", "Monday", "09:00", "11:00",
         "Lab 3", "M Dana - Group A2", "Artificial Intelligence"],
     ["AI-DS", "Problem Solving and Algorithms", "Monday", "12:00",
         "14:00", "Lab 4", "M Shima - Group A2", "Artificial Intelligence"],
-    ["AI-DS", "Data Communications", "Monday", "12:00", "14:00",
-        "Lab 3", "M Dana - Group A1", "Artificial Intelligence"],
+
 
     # Tuesday
     ["AI-DS", "Introduction to Data Science", "Tuesday", "09:00", "11:00",
@@ -584,8 +581,6 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "14:00", "Hall A11", "M Sana", "Artificial Intelligence"],
 
     # Wednesday
-    ["AI-DS", "Object Oriented Programming Concepts", "Wednesday", "09:00",
-        "12:00", "Lab 5", "Dr Mazn - Group A1", "Artificial Intelligence"],
     ["AI-DS", "Introduction to Data Science", "Wednesday", "12:30", "14:30",
         "Lab 4", "M Hiwa - AI and DataScience", "Artificial Intelligence"],
 
@@ -655,6 +650,7 @@ DEFAULT_SCHEDULE = pd.DataFrame([
     ["NUR", "Medical Microbiology & lab", "Tuesday", "14:00",
         "15:00", "Hall G203", "M. Hawbash - Group A1", "Nursing"],
     # Tuesday - Group A2
+
     ["NUR", "Medical Microbiology & lab", "Tuesday", "11:00",
         "12:00", "Lab F 101", "M. Gasha - Group A2", "Nursing"],
 

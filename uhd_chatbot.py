@@ -466,7 +466,7 @@ SCHED_PATH = SCRIPT_DIR / "schedule.csv"
 DEFAULT_FAQ = pd.DataFrame([
     # General University Questions
     ["Where is the main library?",
-     "The Main library under building  (C) Open 8:30–18:00 Sat–Thu.",
+     "The Main library under building  (C). Open 8:30–18:00 Sat–Thu.",
      "library;location;books;study"],
     ["How do I get my student ID?",
      "Go to the Registrar Office with your admission letter + one photo. IDs issued 9:00–14:00.",
@@ -568,11 +568,12 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "Hall A11", "M Dana", "Artificial Intelligence"],
 
     # Monday - Group A1
+   
     ["AI-DS", "Data Communications", "Monday", "09:00", "11:00",
         "Lab 3", "M Dana - Group A2", "Artificial Intelligence"],
     ["AI-DS", "Problem Solving and Algorithms", "Monday", "12:00",
         "14:00", "Lab 4", "M Shima - Group A2", "Artificial Intelligence"],
-
+   
 
     # Tuesday
     ["AI-DS", "Introduction to Data Science", "Tuesday", "09:00", "11:00",
@@ -581,6 +582,7 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "14:00", "Hall A11", "M Sana", "Artificial Intelligence"],
 
     # Wednesday
+    
     ["AI-DS", "Introduction to Data Science", "Wednesday", "12:30", "14:30",
         "Lab 4", "M Hiwa - AI and DataScience", "Artificial Intelligence"],
 
@@ -650,7 +652,6 @@ DEFAULT_SCHEDULE = pd.DataFrame([
     ["NUR", "Medical Microbiology & lab", "Tuesday", "14:00",
         "15:00", "Hall G203", "M. Hawbash - Group A1", "Nursing"],
     # Tuesday - Group A2
-
     ["NUR", "Medical Microbiology & lab", "Tuesday", "11:00",
         "12:00", "Lab F 101", "M. Gasha - Group A2", "Nursing"],
 
@@ -827,14 +828,11 @@ sched_df, sched_src = load_schedule()
 # Status indicator
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
-    st.markdown(
-        f'<span class="status-badge">📚 FAQ: {faq_src}</span>', unsafe_allow_html=True)
+    st.markdown(f'<span class="status-badge">📚 FAQ: {faq_src}</span>', unsafe_allow_html=True)
 with col2:
-    st.markdown(
-        f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
+    st.markdown(f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    st.markdown(
-        f'<span class="status-badge">🕐 {datetime.now().strftime("%H:%M")}</span>', unsafe_allow_html=True)
+    st.markdown(f'<span class="status-badge">🕐 {datetime.now().strftime("%H:%M")}</span>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -921,8 +919,7 @@ def _words(s: str):
 
 
 # ================== UI TABS - ALL VISIBLE ==================
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable", "ℹ️ About"])
+tab1, tab2, tab3, tab4 = st.tabs(["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable", "ℹ️ About"])
 
 # ========== FAQ TAB ==========
 with tab1:
@@ -1000,39 +997,31 @@ with tab2:
                     active_df["course_name"].str.lower().str.contains(q_lower, na=False) |
                     active_df["course_code"].str.lower().str.contains(q_lower, na=False) |
                     active_df["day"].str.lower().str.contains(q_lower, na=False) |
-                    active_df["lecturer"].str.lower(
-                    ).str.contains(q_lower, na=False)
+                    active_df["lecturer"].str.lower().str.contains(q_lower, na=False)
                 ]
 
                 if not matches.empty:
                     # Group by unique courses
-                    unique_courses = matches.groupby(
-                        'course_code').first().reset_index()
+                    unique_courses = matches.groupby('course_code').first().reset_index()
 
-                    st.success(
-                        f"✅ Found {len(unique_courses)} course(s) matching your search!")
+                    st.success(f"✅ Found {len(unique_courses)} course(s) matching your search!")
                     st.markdown("---")
 
                     # Display each unique course
                     for _, course in unique_courses.iterrows():
-                        st.markdown(
-                            f"### {course['course_code']} – {course['course_name']}")
-                        st.markdown(
-                            f"**📚 Department:** {course['department']}")
+                        st.markdown(f"### {course['course_code']} – {course['course_name']}")
+                        st.markdown(f"**📚 Department:** {course['department']}")
 
                         # Get all sessions for this course
-                        course_sessions = matches[matches['course_code']
-                                                  == course['course_code']].sort_values('day')
+                        course_sessions = matches[matches['course_code'] == course['course_code']].sort_values('day')
 
                         st.markdown("**📅 Schedule:**")
                         for _, session in course_sessions.iterrows():
-                            st.markdown(
-                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
+                            st.markdown(f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
 
                         st.markdown("---")
                 else:
-                    st.warning(
-                        "⚠️ No courses found matching your search. Try different keywords!")
+                    st.warning("⚠️ No courses found matching your search. Try different keywords!")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== TIMETABLE TAB ==========
@@ -1056,16 +1045,14 @@ with tab3:
     with col2:
         # Day filter
         unique_days = list(set(sched_df["day"].dropna().tolist()))
-        day_order = ["Saturday", "Sunday", "Monday",
-                     "Tuesday", "Wednesday", "Thursday", "Friday"]
+        day_order = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         sorted_days = [day for day in day_order if day in unique_days]
         day_options = ["All Days"] + sorted_days
         day_filter = st.selectbox("Day:", options=day_options, key="tt_day")
 
     with col3:
         # Sort option
-        sort_option = st.selectbox(
-            "Sort by:", ["Time", "Course Code", "Department"], key="tt_sort")
+        sort_option = st.selectbox("Sort by:", ["Time", "Course Code", "Department"], key="tt_sort")
 
     # Apply filters
     filtered_df = sched_df.copy()
@@ -1091,8 +1078,7 @@ with tab3:
     # Display as cards grouped by day
     if not filtered_df.empty:
         if day_filter == "All Days":
-            day_order = ["Saturday", "Sunday", "Monday",
-                         "Tuesday", "Wednesday", "Thursday", "Friday"]
+            day_order = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
             for day in day_order:
                 day_classes = filtered_df[filtered_df["day"] == day]
                 if not day_classes.empty:
@@ -1170,7 +1156,7 @@ with tab3:
 with tab4:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### ℹ️ About UHD AI Chatbot")
-
+    
     st.markdown("""
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                 padding: 2rem; border-radius: 15px; color: white; margin: 1rem 0;">
@@ -1183,11 +1169,11 @@ with tab4:
         </p>
     </div>
     """, unsafe_allow_html=True)
-
+    
     st.markdown("### 👥 Development Team")
-
+    
     col1, col2, col3 = st.columns(3)
-
+    
     with col1:
         st.markdown("""
         <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
@@ -1197,7 +1183,7 @@ with tab4:
             <p style="color: #6c757d; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
-
+    
     with col2:
         st.markdown("""
         <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
@@ -1207,7 +1193,7 @@ with tab4:
             <p style="color: #6c757d; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
-
+    
     with col3:
         st.markdown("""
         <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
@@ -1217,37 +1203,37 @@ with tab4:
             <p style="color: #6c757d; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
-
+    
     st.markdown("---")
-
+    
     st.markdown("### ✨ Features")
-
+    
     col1, col2 = st.columns(2)
-
+    
     with col1:
         st.markdown("""
         - 🔍 **Smart FAQ Search** - Ask questions about university services
         - 📅 **Class Schedule Finder** - Search courses by name, code, or day
         - 📋 **Complete Timetable** - View all classes with filters
         """)
-
+    
     with col2:
         st.markdown("""
         - 🎯 **AI-Powered Matching** - TF-IDF algorithm for accurate results
         - 📥 **Export Feature** - Download schedules as CSV
         - 🎨 **Beautiful Interface** - Modern and user-friendly design
         """)
-
+    
     st.markdown("---")
-
+    
     st.markdown("### 📊 Data Sources")
     st.markdown(f"""
     - **FAQ Database:** {faq_src} ({len(faq_df)} questions)
     - **Schedule Database:** {sched_src} ({len(sched_df)} classes)
     """)
-
+    
     st.markdown("---")
-
+    
     st.markdown("### 💡 How to Use")
     st.markdown("""
     1. **FAQ Tab**: Type your question about university services
@@ -1255,7 +1241,7 @@ with tab4:
     3. **Full Timetable Tab**: Browse all classes with filters
     4. **About Tab**: Learn more about this chatbot
     """)
-
+    
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer

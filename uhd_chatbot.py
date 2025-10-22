@@ -466,7 +466,7 @@ SCHED_PATH = SCRIPT_DIR / "schedule.csv"
 DEFAULT_FAQ = pd.DataFrame([
     # General University Questions
     ["Where is the main library?",
-     "Main library under building  (C). Open 8:30–18:00 Sat–Thu.",
+     "The main library is next to the Administrative Building (north gate). Open 8:30–18:00 Sat–Thu.",
      "library;location;books;study"],
     ["How do I get my student ID?",
      "Go to the Registrar Office with your admission letter + one photo. IDs issued 9:00–14:00.",
@@ -492,7 +492,7 @@ DEFAULT_FAQ = pd.DataFrame([
 
     # AI & Data Science Questions
     ["Where are the AI labs located?",
-     "AI and Data Science labs (Lab 2, Lab 3, Lab 4, Lab 5) are in the Building (G). Lab schedules are posted outside each lab.",
+     "AI and Data Science labs (Lab 2, Lab 3, Lab 4, Lab 5) are in the Technology Building. Lab schedules are posted outside each lab.",
      "ai;artificial intelligence;data science;labs;location;computer labs"],
     ["What software do I need for AI courses?",
      "For AI courses, you'll need Python, Jupyter Notebook, and various libraries (TensorFlow, PyTorch, scikit-learn). Install instructions are provided in the first class.",
@@ -568,12 +568,14 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "Hall A11", "M Dana", "Artificial Intelligence"],
 
     # Monday - Group A1
-
+    ["AI-DS", "Problem Solving and Algorithms", "Monday", "09:00",
+        "11:00", "Lab 2", "M Shima - Group A1", "Artificial Intelligence"],
     ["AI-DS", "Data Communications", "Monday", "09:00", "11:00",
         "Lab 3", "M Dana - Group A2", "Artificial Intelligence"],
     ["AI-DS", "Problem Solving and Algorithms", "Monday", "12:00",
         "14:00", "Lab 4", "M Shima - Group A2", "Artificial Intelligence"],
-
+    ["AI-DS", "Data Communications", "Monday", "12:00", "14:00",
+        "Lab 3", "M Dana - Group A1", "Artificial Intelligence"],
 
     # Tuesday
     ["AI-DS", "Introduction to Data Science", "Tuesday", "09:00", "11:00",
@@ -582,6 +584,8 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "14:00", "Hall A11", "M Sana", "Artificial Intelligence"],
 
     # Wednesday
+    ["AI-DS", "Object Oriented Programming Concepts", "Wednesday", "09:00",
+        "12:00", "Lab 5", "Dr Mazn - Group A1", "Artificial Intelligence"],
     ["AI-DS", "Introduction to Data Science", "Wednesday", "12:30", "14:30",
         "Lab 4", "M Hiwa - AI and DataScience", "Artificial Intelligence"],
 
@@ -599,6 +603,10 @@ DEFAULT_SCHEDULE = pd.DataFrame([
     # Monday
     ["IT", "Problem Solving and Algorithms", "Monday", "09:00", "11:00",
         "Lab 2", "M Shima - Group A1", "Information Technology"],
+    ["IT", "Data Communications", "Monday", "09:00", "11:00",
+        "Lab 3", "M Dana - Group A2", "Information Technology"],
+    ["IT", "Problem Solving and Algorithms", "Monday", "12:00", "14:00",
+        "Lab 4", "M Shima - Group A2", "Information Technology"],
     ["IT", "Data Communications", "Monday", "12:00", "14:00",
         "Lab 3", "M Dana - Group A1", "Information Technology"],
 
@@ -615,7 +623,8 @@ DEFAULT_SCHEDULE = pd.DataFrame([
      "12:30", "14:30", "Hall A11", "M Arez", "Information Technology"],
 
     # Thursday
-    ["You don't have a lesson today"],
+    ["IT", "Object Oriented Programming Concepts", "Thursday", "09:00",
+        "12:00", "Lab 5", "Dr Mazn - Group A2", "Information Technology"],
 
     # ========== NURSING ==========
     # Saturday - Group A1
@@ -653,12 +662,30 @@ DEFAULT_SCHEDULE = pd.DataFrame([
     ["NUR", "Adult Nursing and Lab", "Wednesday", "09:00",
         "14:00", "Hall G203", "Dr. Bayan", "Nursing"],
 
-    # ========== SAMPLE DATA FOR OTHER DEPARTMENTS (To be updated) ==========
-    # Medical Laboratory Science
-    ["MLS", "Clinical Chemistry", "Sunday", "09:00", "11:00",
-        "MLS Lab 1", "Dr. Shwan", "Medical Laboratory Science"],
-    ["MLS", "Hematology", "Monday", "10:00", "12:00",
-        "MLS Lab 2", "Dr. Avan", "Medical Laboratory Science"],
+    # ========== MEDICAL LABORATORY SCIENCE (MLS) ==========
+    # Sunday
+    ["MLS", "Lab Techniques & Instrumentation-[ML-03AMorning]", "Sunday", "09:00",
+     "11:00", "F 201", "Hawbash Muhammed-Amin", "Medical Laboratory Science"],
+    ["MLS", "Human Biology-[ML-03AMorning]", "Sunday", "13:00",
+     "15:00", "F 201", "Huner Hasan Kareem", "Medical Laboratory Science"],
+
+    # Monday
+    ["MLS", "Human Biology-[ML-03AMorning]", "Monday", "11:00",
+     "12:00", "F 201", "Huner Hasan Kareem", "Medical Laboratory Science"],
+    ["MLS", "Ethics for Medical Students-[ML-03AMorning]", "Monday", "12:00",
+     "14:00", "F 201", "Bakhan Farih Hamasharif", "Medical Laboratory Science"],
+
+    # Tuesday
+    ["MLS", "Analytical Chemistry & Lab-[ML-03AMorning]", "Tuesday", "11:00",
+     "13:00", "F 201", "Bayan Salih Azizi", "Medical Laboratory Science"],
+    ["MLS", "Analytical Chemistry & Lab-[ML-03AMorning]", "Tuesday", "13:00",
+     "15:00", "F 114", "Bayan Salih Azizi", "Medical Laboratory Science"],
+
+    # Wednesday
+    ["MLS", "G. Microbiology I & Lab-[ML-03AMorning]", "Wednesday", "09:00",
+     "11:00", "F 101", "Gasha Salih Ahmed", "Medical Laboratory Science"],
+    ["MLS", "G. Microbiology I & Lab-[ML-03AMorning]", "Wednesday", "13:00",
+     "15:00", "F 201", "Gasha Salih Ahmed", "Medical Laboratory Science"],
 
     # ========== LAW DEPARTMENT ==========
     # Saturday

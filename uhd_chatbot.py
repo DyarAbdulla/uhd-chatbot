@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 import re
 import numpy as np
@@ -1214,44 +1213,11 @@ with col2:
     st.markdown(
         f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    # Use client-side time for accurate timezone on Streamlit Cloud
-    components.html(
-        """
-        <span class="status-badge" id="time-badge">🕐 <span id="time-display">Loading...</span></span>
-        
-        <script>
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', {
-                hour: '2-digit', 
-                minute: '2-digit', 
-                hour12: false
-            });
-            const dayStr = now.toLocaleDateString('en-US', {
-                weekday: 'long'
-            });
-            const timeDisplay = document.getElementById('time-display');
-            if (timeDisplay) {
-                timeDisplay.textContent = `${timeStr} ${dayStr}`;
-            }
-        }
-        
-        // Update immediately
-        updateTime();
-        
-        // Update every minute
-        setInterval(updateTime, 60000);
-        
-        // Update when tab becomes visible
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateTime();
-            }
-        });
-        </script>
-        """,
-        height=50
-    )
+    current_time = datetime.now()
+    time_str = current_time.strftime("%H:%M")
+    day_str = current_time.strftime("%A")
+    st.markdown(
+        f'<span class="status-badge">🕐 {time_str} {day_str}</span>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 

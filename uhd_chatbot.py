@@ -1217,7 +1217,26 @@ with col3:
     time_str = current_time.strftime("%H:%M")
     day_str = current_time.strftime("%A")
     st.markdown(
-        f'<span class="status-badge">🕐 {time_str} {day_str}</span>', unsafe_allow_html=True)
+        f'<span class="status-badge" id="time-badge">🕐 {time_str} {day_str}</span>', unsafe_allow_html=True)
+    
+    # Add JavaScript to update time every minute
+    st.markdown("""
+    <script>
+    function updateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: false});
+        const dayStr = now.toLocaleDateString('en-US', {weekday: 'long'});
+        const badge = document.getElementById('time-badge');
+        if (badge) {
+            badge.innerHTML = `🕐 ${timeStr} ${dayStr}`;
+        }
+    }
+    
+    // Update immediately and then every minute
+    updateTime();
+    setInterval(updateTime, 60000);
+    </script>
+    """, unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 

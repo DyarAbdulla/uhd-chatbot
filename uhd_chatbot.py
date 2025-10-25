@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import re
 import numpy as np
@@ -1213,12 +1214,59 @@ with col2:
     st.markdown(
         f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    # Simple server time display - will show server timezone
-    current_time = datetime.now()
-    time_str = current_time.strftime("%H:%M")
-    day_str = current_time.strftime("%A")
-    st.markdown(
-        f'<span class="status-badge">🕐 {time_str} {day_str}</span>', unsafe_allow_html=True)
+    # Use client-side time display for accurate timezone on Streamlit Cloud
+    components.html(
+        """
+        <div style="
+            background: rgba(245, 222, 179, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 0.8rem 1.8rem;
+            border-radius: 35px;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(245, 222, 179, 0.4);
+            font-size: 1rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            border: 2px solid rgba(245, 222, 179, 0.7);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        " id="time-badge">
+            🕐 <span id="time-display">Loading...</span>
+        </div>
+        
+        <script>
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', {
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false
+            });
+            const dayStr = now.toLocaleDateString('en-US', {
+                weekday: 'long'
+            });
+            const timeDisplay = document.getElementById('time-display');
+            if (timeDisplay) {
+                timeDisplay.textContent = `${timeStr} ${dayStr}`;
+            }
+        }
+        
+        // Update immediately
+        updateTime();
+        
+        // Update every minute
+        setInterval(updateTime, 60000);
+        
+        // Update when tab becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                updateTime();
+            }
+        });
+        </script>
+        """,
+        height=50
+    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 

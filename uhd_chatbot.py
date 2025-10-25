@@ -1223,10 +1223,49 @@ with col2:
     st.markdown(
         f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    # Iraq time for Streamlit Cloud
+    # Iraq time with same glassmorphism styling as FAQ and Schedule
     components.html(
         """
-        <span class="status-badge" id="time-badge">🕐 <span id="time-display">Loading...</span></span>
+        <style>
+        .time-badge {
+            background: rgba(245, 222, 179, 0.6) !important;
+            backdrop-filter: blur(15px) !important;
+            padding: 0.8rem 1.8rem !important;
+            border-radius: 35px !important;
+            display: inline-block !important;
+            box-shadow: 0 8px 25px rgba(245, 222, 179, 0.4) !important;
+            font-size: 1rem !important;
+            font-weight: 800 !important;
+            color: #1a1a1a !important;
+            border: 2px solid rgba(245, 222, 179, 0.7) !important;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5) !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .time-badge:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 12px 35px rgba(245, 222, 179, 0.6) !important;
+            background: rgba(245, 222, 179, 0.7) !important;
+        }
+        
+        .time-badge::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent) !important;
+            transition: left 0.5s !important;
+        }
+        
+        .time-badge:hover::before {
+            left: 100% !important;
+        }
+        </style>
+        <span class="time-badge" id="time-badge">🕐 <span id="time-display">Loading...</span></span>
         
         <script>
         function updateTime() {

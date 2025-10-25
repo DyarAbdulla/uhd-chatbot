@@ -1214,59 +1214,11 @@ with col2:
     st.markdown(
         f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    # Use client-side time display for accurate timezone on Streamlit Cloud
-    components.html(
-        """
-        <div style="
-            background: rgba(245, 222, 179, 0.6);
-            backdrop-filter: blur(15px);
-            padding: 0.8rem 1.8rem;
-            border-radius: 35px;
-            display: inline-block;
-            box-shadow: 0 8px 25px rgba(245, 222, 179, 0.4);
-            font-size: 1rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            border: 2px solid rgba(245, 222, 179, 0.7);
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
-        " id="time-badge">
-            🕐 <span id="time-display">Loading...</span>
-        </div>
-        
-        <script>
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', {
-                hour: '2-digit', 
-                minute: '2-digit', 
-                hour12: false
-            });
-            const dayStr = now.toLocaleDateString('en-US', {
-                weekday: 'long'
-            });
-            const timeDisplay = document.getElementById('time-display');
-            if (timeDisplay) {
-                timeDisplay.textContent = `${timeStr} ${dayStr}`;
-            }
-        }
-        
-        // Update immediately
-        updateTime();
-        
-        // Update every minute
-        setInterval(updateTime, 60000);
-        
-        // Update when tab becomes visible
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateTime();
-            }
-        });
-        </script>
-        """,
-        height=50
-    )
+    current_time = datetime.now()
+    time_str = current_time.strftime("%H:%M")
+    day_str = current_time.strftime("%A")
+    st.markdown(
+        f'<span class="status-badge">🕐 {time_str} {day_str}</span>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1515,7 +1467,7 @@ with tab2:
                         st.markdown("**📅 Schedule:**")
                         for _, session in course_sessions.iterrows():
                             st.markdown(
-                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
+                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨🏫 {session['lecturer']}")
 
                         st.markdown("---")
                 else:
@@ -1595,7 +1547,7 @@ with tab3:
                                     <span style="color: #6c757d;">{row['course_name']}</span>
                                 </div>
                                 <div>
-                                    <strong>👨‍🏫 {row['lecturer']}</strong><br>
+                                    <strong>👨🏫 {row['lecturer']}</strong><br>
                                     <span style="color: #6c757d;">📚 {row['department']}</span>
                                 </div>
                                 <div>
@@ -1618,7 +1570,7 @@ with tab3:
                             <span style="color: #6c757d;">{row['course_name']}</span>
                         </div>
                         <div>
-                            <strong>👨‍🏫 {row['lecturer']}</strong><br>
+                            <strong>👨🏫 {row['lecturer']}</strong><br>
                             <span style="color: #6c757d;">📚 {row['department']}</span>
                         </div>
                         <div>
@@ -1668,7 +1620,7 @@ with tab4:
         st.markdown("""
         **Medical & Health Sciences:**
         - 🦷 Dentistry
-        - 👩‍⚕️ Nursing
+        - 👩⚕️ Nursing
         - 🧪 Medical Laboratory Science
         - 💊 Pharmacy
         """)
@@ -1715,7 +1667,7 @@ with tab5:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
                     text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-size: 3rem;">👨‍💻</div>
+            <div style="font-size: 3rem;">👨💻</div>
             <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Dyar Abdulla</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
@@ -1725,7 +1677,7 @@ with tab5:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
                     text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-size: 3rem;">👨‍💻</div>
+            <div style="font-size: 3rem;">👨💻</div>
             <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Anas Sarkawt</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
@@ -1735,7 +1687,7 @@ with tab5:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
                     text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-size: 3rem;">👨‍💻</div>
+            <div style="font-size: 3rem;">👨💻</div>
             <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Drood Muhammed</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>

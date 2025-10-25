@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 import re
 import numpy as np
@@ -851,18 +850,27 @@ DEFAULT_FAQ = pd.DataFrame([
     ["Where is the main library?",
      "The Main library under building  (C). Open 8:30–18:00 Sat–Thu.",
      "library;location;books;study"],
+    ["How do I get my student ID?",
+     "Go to the Registrar Office with your admission letter + one photo. IDs issued 9:00–14:00.",
+     "registrar;id;student card"],
     ["What is the Wi-Fi network?",
      "Free WiFi without password is available in the cafeteria under the G building",
      "wifi;internet;it;network;connection"],
     ["Where is the cafeteria?",
      "We have two cafeterias, the first is a coffee shop to the left of the entrance and the second is on the ground floor of the building (C) . Breakfast 8:00–10:30, lunch 12:00–15:00.",
      "food;cafeteria;dining;meals;restaurant;eat"],
+    ["What are the festival timings?",
+     "The University Festival runs for three days, 10:00–16:00 daily at the main courtyard.",
+     "festival;events;celebration;activities"],
     ["Where can I print or photocopy?",
      "It is next to Building (A).",
      "printing;photocopy;services;printer;copy;documents"],
     ["How do I register for courses?",
      "Go to uhd website login and enter Email and password You can Register For courses. Registration opens one week before each semester.",
      "registration;courses;enrollment;classes;register;enroll"],
+    ["Where is the parking lot?",
+     "Student parking is available behind Building C. Parking permits required from Security Office.",
+     "parking;car;vehicle;transportation;drive"],
 
     # AI & Data Science Questions
     ["Where are the AI labs located?",
@@ -1396,6 +1404,7 @@ with tab1:
     # Show sample questions
     with st.expander("📋 Sample Questions"):
         st.markdown("- Where is the main library?")
+        st.markdown("- How do I get my student ID?")
         st.markdown("- What is the Wi-Fi network?")
         st.markdown("- Where can I print documents?")
         st.markdown("- How do I register for courses?")
@@ -1467,7 +1476,7 @@ with tab2:
                         st.markdown("**📅 Schedule:**")
                         for _, session in course_sessions.iterrows():
                             st.markdown(
-                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨🏫 {session['lecturer']}")
+                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
 
                         st.markdown("---")
                 else:
@@ -1547,7 +1556,7 @@ with tab3:
                                     <span style="color: #6c757d;">{row['course_name']}</span>
                                 </div>
                                 <div>
-                                    <strong>👨🏫 {row['lecturer']}</strong><br>
+                                    <strong>👨‍🏫 {row['lecturer']}</strong><br>
                                     <span style="color: #6c757d;">📚 {row['department']}</span>
                                 </div>
                                 <div>
@@ -1570,7 +1579,7 @@ with tab3:
                             <span style="color: #6c757d;">{row['course_name']}</span>
                         </div>
                         <div>
-                            <strong>👨🏫 {row['lecturer']}</strong><br>
+                            <strong>👨‍🏫 {row['lecturer']}</strong><br>
                             <span style="color: #6c757d;">📚 {row['department']}</span>
                         </div>
                         <div>
@@ -1620,7 +1629,7 @@ with tab4:
         st.markdown("""
         **Medical & Health Sciences:**
         - 🦷 Dentistry
-        - 👩⚕️ Nursing
+        - 👩‍⚕️ Nursing
         - 🧪 Medical Laboratory Science
         - 💊 Pharmacy
         """)
@@ -1667,7 +1676,7 @@ with tab5:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
                     text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-size: 3rem;">👨💻</div>
+            <div style="font-size: 3rem;">👨‍💻</div>
             <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Dyar Abdulla</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
@@ -1677,7 +1686,7 @@ with tab5:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
                     text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-size: 3rem;">👨💻</div>
+            <div style="font-size: 3rem;">👨‍💻</div>
             <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Anas Sarkawt</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
@@ -1687,7 +1696,7 @@ with tab5:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
                     text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-size: 3rem;">👨💻</div>
+            <div style="font-size: 3rem;">👨‍💻</div>
             <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Drood Muhammed</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>

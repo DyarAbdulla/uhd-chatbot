@@ -1213,19 +1213,25 @@ with col2:
     st.markdown(
         f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    current_time = datetime.now()
-    time_str = current_time.strftime("%H:%M")
-    day_str = current_time.strftime("%A")
+    # Use JavaScript to get client-side time instead of server time
     st.markdown(
-        f'<span class="status-badge" id="time-badge">🕐 {time_str} {day_str}</span>', unsafe_allow_html=True)
+        f'<span class="status-badge" id="time-badge">🕐 Loading...</span>', unsafe_allow_html=True)
     
-    # Add JavaScript to update time every minute
+    # JavaScript to handle client-side time display for cloud deployment
     st.markdown("""
     <script>
     function updateTime() {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: false});
-        const dayStr = now.toLocaleDateString('en-US', {weekday: 'long'});
+        const timeStr = now.toLocaleTimeString('en-US', {
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: false,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        });
+        const dayStr = now.toLocaleDateString('en-US', {
+            weekday: 'long',
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        });
         const badge = document.getElementById('time-badge');
         if (badge) {
             badge.innerHTML = `🕐 ${timeStr} ${dayStr}`;
@@ -1235,6 +1241,13 @@ with col3:
     // Update immediately and then every minute
     updateTime();
     setInterval(updateTime, 60000);
+    
+    // Also update when the page becomes visible (handles tab switching)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            updateTime();
+        }
+    });
     </script>
     """, unsafe_allow_html=True)
 

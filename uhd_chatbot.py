@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import re
+import numpy as np
 from pathlib import Path
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -18,35 +19,51 @@ st.set_page_config(
 # ================== CUSTOM CSS ==================
 st.markdown("""
 <style>
-    /* Main container styling - Dark Theme */
+    /* Main container styling - Campus Background Theme with Enhanced Overlay */
     .main {
-        padding-top: 2rem;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        padding-top: 1rem;
+        background: radial-gradient(circle at 50% 20%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 70%), 
+                    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
+                    url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         min-height: 100vh;
     }
     
     /* Override Streamlit's default background */
     .stApp {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        background: radial-gradient(circle at 50% 20%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 70%), 
+                    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
+                    url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
     }
     
     /* Force all Streamlit elements to have proper styling */
     [data-testid="stAppViewContainer"] {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        background: radial-gradient(circle at 50% 20%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 70%), 
+                    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
+                    url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
     }
     
     [data-testid="stHeader"] {
         background: transparent;
     }
     
-    /* Header styling - Premium Dark */
+    /* Header styling - Campus Building Colors */
     .header-container {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, rgba(245, 222, 179, 0.9) 0%, rgba(160, 82, 45, 0.8) 50%, rgba(135, 206, 235, 0.8) 100%);
+        backdrop-filter: blur(20px);
         padding: 2.5rem;
         border-radius: 25px;
         margin-bottom: 2rem;
-        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        border: 2px solid rgba(245, 222, 179, 0.4);
         position: relative;
         overflow: hidden;
     }
@@ -58,14 +75,16 @@ st.markdown("""
         right: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: glow 3s ease-in-out infinite;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+        z-index: -1;
     }
     
-    @keyframes glow {
-        0%, 100% { opacity: 0.5; }
-        50% { opacity: 1; }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
     }
+    
     
     .university-name {
         color: white;
@@ -96,85 +115,113 @@ st.markdown("""
     }
     
     .stTabs [data-baseweb="tab"] {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(245, 222, 179, 0.3);
         backdrop-filter: blur(10px);
         border-radius: 15px;
         padding: 16px 30px;
         font-weight: 600;
-        color: #e0e0e0;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #2c3e50;
+        border: 1px solid rgba(245, 222, 179, 0.4);
         transition: all 0.4s ease;
         font-size: 16px;
     }
     
     .stTabs [data-baseweb="tab"]:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: #667eea;
+        background: rgba(245, 222, 179, 0.5);
+        border-color: #f5deb3;
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 25px rgba(245, 222, 179, 0.4);
     }
     
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white !important;
+        background: linear-gradient(135deg, #f5deb3 0%, #a0522d 50%, #87ceeb 100%);
+        color: #2c3e50 !important;
         border-color: transparent;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        box-shadow: 0 10px 30px rgba(245, 222, 179, 0.5), 0 0 20px rgba(135, 206, 235, 0.3);
         transform: translateY(-2px);
+        position: relative;
     }
     
-    /* Content cards - Dark Glassmorphism */
+    .stTabs [aria-selected="true"]::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #f5deb3, #a0522d, #87ceeb);
+        border-radius: 0 0 15px 15px;
+    }
+    
+    /* Content cards - Campus Background */
     .content-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(15px);
-        padding: 2.5rem;
-        border-radius: 25px;
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
-        margin-bottom: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        margin-bottom: 1.5rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .content-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(245, 222, 179, 0.2) 0%, rgba(135, 206, 235, 0.2) 100%);
+        border-radius: 20px;
+        z-index: -1;
     }
     
     .content-card h3 {
         color: #ffffff !important;
         margin-bottom: 1rem;
-        font-size: 1.85rem;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
     }
     
     .content-card p, .content-card div {
-        color: #e0e0e0 !important;
+        color: #ffffff !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+        font-weight: 500;
     }
     
-    /* Button styling - Neon Glow */
+    /* Button styling - Campus Building Colors */
     .stButton button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: linear-gradient(135deg, #f5deb3 0%, #a0522d 50%, #87ceeb 100%);
+        color: #2c3e50;
         border: none;
-        border-radius: 15px;
-        padding: 0.75rem 3rem;
-        font-weight: 700;
-        transition: all 0.4s ease;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 15px;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(245, 222, 179, 0.3);
+        font-size: 14px;
     }
     
     .stButton button:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(245, 222, 179, 0.4);
+        background: linear-gradient(135deg, #f0e68c 0%, #cd853f 50%, #b0e0e6 100%);
     }
     
-    /* Input styling - Dark Mode */
+    /* Input styling - Campus Background */
     .stTextInput input, .stSelectbox select {
         border-radius: 15px;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        padding: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 1rem 1.2rem;
         transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.08) !important;
-        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.12) !important;
+        backdrop-filter: blur(15px);
         color: #ffffff !important;
         font-size: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
     
     .stTextInput input::placeholder {
@@ -182,21 +229,22 @@ st.markdown("""
     }
     
     .stTextInput input:focus, .stSelectbox select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
-        background: rgba(255, 255, 255, 0.12) !important;
+        border-color: #f5deb3;
+        box-shadow: 0 0 0 4px rgba(245, 222, 179, 0.4), 0 8px 25px rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.15) !important;
         outline: none;
+        transform: translateY(-1px);
     }
     
     .stTextInput label, .stSelectbox label {
         color: #ffffff !important;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 15px;
         margin-bottom: 8px;
-        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
     }
     
-    /* Fix selectbox dropdown - Dark */
+    /* Fix selectbox dropdown - Dark Chatbot */
     .stSelectbox div[data-baseweb="select"] > div {
         background: rgba(255, 255, 255, 0.08) !important;
         backdrop-filter: blur(10px);
@@ -204,23 +252,23 @@ st.markdown("""
         border-color: rgba(255, 255, 255, 0.2) !important;
     }
     
-    /* Fix selectbox options - Dark */
+    /* Fix selectbox options - Dark Chatbot */
     [role="option"] {
         background: rgba(30, 30, 60, 0.95) !important;
         color: #ffffff !important;
     }
     
     [role="option"]:hover {
-        background: rgba(102, 126, 234, 0.3) !important;
+        background: rgba(245, 222, 179, 0.3) !important;
     }
     
-    /* Success/Warning/Info boxes - Dark Theme */
+    /* Success/Warning/Info boxes - Dark Chatbot */
     .stSuccess {
         background: rgba(40, 167, 69, 0.15) !important;
         backdrop-filter: blur(10px);
-        border-left: 5px solid #28a745;
-        border-radius: 15px;
-        padding: 1.25rem;
+        border-left: 4px solid #28a745;
+        border-radius: 12px;
+        padding: 1rem;
         color: #90ee90 !important;
         border: 1px solid rgba(40, 167, 69, 0.3);
     }
@@ -228,9 +276,9 @@ st.markdown("""
     .stWarning {
         background: rgba(255, 193, 7, 0.15) !important;
         backdrop-filter: blur(10px);
-        border-left: 5px solid #ffc107;
-        border-radius: 15px;
-        padding: 1.25rem;
+        border-left: 4px solid #ffc107;
+        border-radius: 12px;
+        padding: 1rem;
         color: #ffd54f !important;
         border: 1px solid rgba(255, 193, 7, 0.3);
     }
@@ -238,9 +286,9 @@ st.markdown("""
     .stInfo {
         background: rgba(23, 162, 184, 0.15) !important;
         backdrop-filter: blur(10px);
-        border-left: 5px solid #17a2b8;
-        border-radius: 15px;
-        padding: 1.25rem;
+        border-left: 4px solid #17a2b8;
+        border-radius: 12px;
+        padding: 1rem;
         color: #80deea !important;
         border: 1px solid rgba(23, 162, 184, 0.3);
     }
@@ -261,47 +309,57 @@ st.markdown("""
     
     /* Class card styling - Dark Premium */
     .class-card {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        background: linear-gradient(135deg, rgba(245, 222, 179, 0.2) 0%, rgba(160, 82, 45, 0.2) 100%);
         backdrop-filter: blur(15px);
-        border-left: 5px solid #667eea;
+        border-left: 5px solid #f5deb3;
         border-radius: 20px;
         padding: 1.75rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         transition: all 0.4s ease;
-        border: 1px solid rgba(102, 126, 234, 0.3);
+        border: 1px solid rgba(245, 222, 179, 0.3);
     }
     
     .class-card:hover {
         transform: translateX(10px) scale(1.02);
-        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 12px 40px rgba(245, 222, 179, 0.4);
         border-left-width: 8px;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+        background: linear-gradient(135deg, rgba(245, 222, 179, 0.3) 0%, rgba(160, 82, 45, 0.3) 100%);
     }
     
-    /* Status badge - Dark Neon */
+    /* Status badge - Enhanced Clarity */
     .status-badge {
-        background: rgba(102, 126, 234, 0.2);
-        backdrop-filter: blur(10px);
-        padding: 0.7rem 1.5rem;
-        border-radius: 30px;
+        background: rgba(245, 222, 179, 0.6);
+        backdrop-filter: blur(15px);
+        padding: 0.8rem 1.8rem;
+        border-radius: 35px;
         display: inline-block;
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #ffffff;
-        border: 2px solid rgba(102, 126, 234, 0.4);
-        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 25px rgba(245, 222, 179, 0.4);
+        font-size: 1rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        border: 2px solid rgba(245, 222, 179, 0.7);
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
     }
     
-    /* Footer */
+    .status-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(245, 222, 179, 0.6);
+        background: rgba(245, 222, 179, 0.7);
+    }
+    
+    /* Footer - Enhanced Clarity */
     .footer {
         text-align: center;
         padding: 2rem;
-        color: #6c757d;
-        font-size: 0.9rem;
-        border-top: 2px solid #e9ecef;
-        margin-top: 3rem;
+        color: #ffffff;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 2rem;
+        background: rgba(255, 255, 255, 0.02);
     }
     
     /* Expander styling */
@@ -311,46 +369,52 @@ st.markdown("""
         font-weight: 600;
     }
     
-    /* Section headers - Bright on Dark */
+    /* Section headers - Enhanced Clarity */
     h1, h2, h3 {
         color: #ffffff !important;
         font-weight: 700;
-        text-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        text-shadow: 0 3px 12px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 0, 0, 0.6);
     }
     
-    /* Regular text - Light on Dark */
+    /* Regular text - Enhanced Clarity */
     p, div, span, label, li {
-        color: #e0e0e0 !important;
+        color: #ffffff !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        font-weight: 500;
     }
     
-    /* Markdown text */
+    /* Markdown text - Enhanced Clarity */
     .markdown-text-container {
-        color: #e0e0e0 !important;
+        color: #ffffff !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        font-weight: 500;
     }
     
-    /* Streamlit elements */
+    /* Streamlit elements - Enhanced Clarity */
     .stMarkdown, .element-container {
-        color: #e0e0e0 !important;
+        color: #ffffff !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        font-weight: 500;
     }
     
-    /* Text areas - Dark */
+    /* Text areas - Dark Chatbot */
     .stTextArea textarea {
         color: #ffffff !important;
         background: rgba(255, 255, 255, 0.08) !important;
         backdrop-filter: blur(10px);
         border: 2px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 15px !important;
+        border-radius: 12px !important;
     }
     
     .stTextArea textarea::placeholder {
         color: rgba(255, 255, 255, 0.5) !important;
     }
     
-    /* Expander styling - Dark Glassmorphism */
+    /* Expander styling - Dark Chatbot */
     .streamlit-expanderHeader {
         background: rgba(255, 255, 255, 0.08) !important;
         backdrop-filter: blur(10px);
-        border-radius: 15px;
+        border-radius: 12px;
         font-weight: 600;
         color: #ffffff !important;
         border: 1px solid rgba(255, 255, 255, 0.15);
@@ -361,17 +425,19 @@ st.markdown("""
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-top: none;
-        color: #e0e0e0 !important;
+        color: #e2e8f0 !important;
     }
     
-    /* Dataframe styling - Dark */
+    /* Dataframe styling - Dark Chatbot */
     .stDataFrame {
         background: rgba(255, 255, 255, 0.05) !important;
         backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .stDataFrame table {
-        color: #e0e0e0 !important;
+        color: #e2e8f0 !important;
     }
     
     /* Download button */
@@ -393,6 +459,321 @@ st.markdown("""
     /* Remove all horizontal lines */
     hr {
         display: none !important;
+    }
+    
+    /* Hide GitHub and Fork buttons */
+    [data-testid="stHeader"] .stAppHeader {
+        display: none !important;
+    }
+    
+    /* Hide Streamlit's default header elements */
+    .stApp > header {
+        display: none !important;
+    }
+    
+    /* Hide any GitHub/Fork related elements */
+    [data-testid="stHeader"] {
+        display: none !important;
+    }
+    
+    /* Fix developer name spacing */
+    .developer-card h4 {
+        margin: 0.5rem 0 !important;
+        padding: 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Enhanced Clock Widget */
+    .clock-widget {
+        background: linear-gradient(135deg, #f5deb3 0%, #a0522d 100%) !important;
+        text-align: center;
+        min-width: 120px;
+        color: white !important;
+    }
+    
+    .clock-widget small {
+        font-size: 0.8rem;
+        opacity: 0.9;
+        display: block;
+        margin-top: 2px;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    /* Enhanced Status Badges */
+    .status-badge {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .status-badge::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .status-badge:hover::before {
+        left: 100%;
+    }
+    
+    .status-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(245, 222, 179, 0.5);
+    }
+    
+    /* Enhanced Header with Animation */
+    .header-container {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .header-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        transform: translateX(-100%);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    /* Enhanced Tab Styling */
+    .stTabs [data-baseweb="tab"] {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stTabs [data-baseweb="tab"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover::before {
+        left: 100%;
+    }
+    
+    /* Enhanced Button Animations */
+    .stButton button {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stButton button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .stButton button:hover::before {
+        left: 100%;
+    }
+    
+    /* Enhanced Class Cards */
+    .class-card {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .class-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.8s;
+    }
+    
+    .class-card:hover::before {
+        left: 100%;
+    }
+    
+    /* Enhanced Input Focus Effects */
+    .stTextInput input:focus, .stSelectbox select:focus {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 3px rgba(245, 222, 179, 0.3), 0 8px 25px rgba(245, 222, 179, 0.2);
+    }
+    
+     /* Enhanced Content Cards with Unified Glass Style */
+     .content-card {
+         position: relative;
+         overflow: hidden;
+         background: rgba(255, 255, 255, 0.1) !important;
+         backdrop-filter: blur(20px) !important;
+         border: 1px solid rgba(255, 255, 255, 0.2) !important;
+         border-radius: 20px !important;
+         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+         padding: 2rem !important;
+     }
+     
+     /* Unified Glass Style for All Cards */
+     .glass-card {
+         background: rgba(255, 255, 255, 0.1) !important;
+         backdrop-filter: blur(20px) !important;
+         border: 1px solid rgba(255, 255, 255, 0.2) !important;
+         border-radius: 20px !important;
+         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+         padding: 1.5rem !important;
+     }
+     
+     /* Answer Box Glass Style */
+     .answer-box {
+         background: rgba(0, 0, 0, 0.4) !important;
+         backdrop-filter: blur(20px) !important;
+         border: 1px solid rgba(255, 255, 255, 0.2) !important;
+         border-radius: 16px !important;
+         padding: 1.5rem !important;
+         color: white !important;
+         line-height: 1.6 !important;
+     }
+     
+     /* Professional Tab Styling */
+     .stTabs [data-baseweb="tab-list"] {
+         gap: 0.5rem !important;
+         background: rgba(255, 255, 255, 0.1) !important;
+         backdrop-filter: blur(20px) !important;
+         border: 1px solid rgba(255, 255, 255, 0.2) !important;
+         border-radius: 15px !important;
+         padding: 0.5rem !important;
+         margin: 1rem 0 !important;
+     }
+     
+     .stTabs [data-baseweb="tab"] {
+         background: rgba(255, 255, 255, 0.1) !important;
+         backdrop-filter: blur(15px) !important;
+         border: 1px solid rgba(255, 255, 255, 0.2) !important;
+         border-radius: 12px !important;
+         color: #ffffff !important;
+         font-weight: 600 !important;
+         padding: 0.75rem 1.5rem !important;
+         margin: 0 !important;
+         transition: all 0.3s ease !important;
+         position: relative !important;
+     }
+     
+     .stTabs [data-baseweb="tab"]:hover {
+         background: rgba(255, 255, 255, 0.15) !important;
+         backdrop-filter: blur(20px) !important;
+         border: 1px solid rgba(255, 255, 255, 0.3) !important;
+         transform: translateY(-1px) !important;
+         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+     }
+     
+     .stTabs [aria-selected="true"] {
+         background: rgba(255, 255, 255, 0.2) !important;
+         backdrop-filter: blur(25px) !important;
+         border: 1px solid rgba(255, 255, 255, 0.4) !important;
+         box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+     }
+     
+     .stTabs [aria-selected="true"]::after {
+         content: '' !important;
+         position: absolute !important;
+         bottom: -2px !important;
+         left: 50% !important;
+         transform: translateX(-50%) !important;
+         width: 60% !important;
+         height: 3px !important;
+         background: linear-gradient(90deg, #ff6b6b, #ff8e8e) !important;
+         border-radius: 2px !important;
+         box-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
+     }
+    
+    .content-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #f5deb3, #a0522d, #f5deb3);
+        background-size: 200% 100%;
+        animation: gradient-shift 3s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    /* Enhanced Developer Cards */
+    .developer-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+    
+    .developer-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.6s;
+    }
+    
+    .developer-card:hover::before {
+        left: 100%;
+    }
+    
+    .developer-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Enhanced Footer */
+    .footer {
+        background: linear-gradient(135deg, rgba(245, 222, 179, 0.15) 0%, rgba(160, 82, 45, 0.15) 100%);
+        backdrop-filter: blur(10px);
+        border-top: 2px solid rgba(245, 222, 179, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #f5deb3, transparent);
+        animation: footer-shine 4s infinite;
+    }
+    
+    @keyframes footer-shine {
+        0% { left: -100%; }
+        100% { left: 100%; }
     }
 
 </style>
@@ -456,6 +837,7 @@ else:
         <h1 class="university-name">🎓 UNIVERSITY OF HUMAN DEVELOPMENT</h1>
         <p class="subtitle">AI FAQ & Class Schedule Chatbot</p>
     </div>
+    <div class="uhd-watermark">UHD</div>
     """, unsafe_allow_html=True)
 
 # ================== FILE PATHS ==================
@@ -468,27 +850,18 @@ DEFAULT_FAQ = pd.DataFrame([
     ["Where is the main library?",
      "The Main library under building  (C). Open 8:30–18:00 Sat–Thu.",
      "library;location;books;study"],
-    ["How do I get my student ID?",
-     "Go to the Registrar Office with your admission letter + one photo. IDs issued 9:00–14:00.",
-     "registrar;id;student card"],
     ["What is the Wi-Fi network?",
-     "Use 'Uni-Students'. Login with your student email + password from IT Helpdesk.",
+     "Free WiFi without password is available in the cafeteria under the G building",
      "wifi;internet;it;network;connection"],
     ["Where is the cafeteria?",
-     "Student Center (ground floor). Breakfast 8:00–10:30, lunch 12:00–15:00.",
+     "We have two cafeterias, the first is a coffee shop to the left of the entrance and the second is on the ground floor of the building (C) . Breakfast 8:00–10:30, lunch 12:00–15:00.",
      "food;cafeteria;dining;meals;restaurant;eat"],
-    ["What are the festival timings?",
-     "The University Festival runs for three days, 10:00–16:00 daily at the main courtyard.",
-     "festival;events;celebration;activities"],
     ["Where can I print or photocopy?",
-     "Printing and photocopying are available at the Library (ground floor) and the Student Center shop.",
+     "It is next to Building (A).",
      "printing;photocopy;services;printer;copy;documents"],
     ["How do I register for courses?",
-     "Course registration is done online through the student portal. Registration opens one week before each semester.",
+     "Go to uhd website login and enter Email and password You can Register For courses. Registration opens one week before each semester.",
      "registration;courses;enrollment;classes;register;enroll"],
-    ["Where is the parking lot?",
-     "Student parking is available behind Building C. Parking permits required from Security Office.",
-     "parking;car;vehicle;transportation;drive"],
 
     # AI & Data Science Questions
     ["Where are the AI labs located?",
@@ -506,10 +879,16 @@ DEFAULT_FAQ = pd.DataFrame([
     ["What is Problem Solving and Algorithms about?",
      "Problem Solving and Algorithms teaches computational thinking, algorithm design, and programming fundamentals. It's taught by M. Shima with both lecture and lab sessions.",
      "algorithms;problem solving;programming;course;shima;ai;it"],
+    ["Who teaches Advanced Mathematics?",
+     "Advanced Mathematics is taught by M. Sana on Tuesday 12:00-14:00 in Hall A11 for AI-DS students.",
+     "advanced mathematics;math;mathematics;teacher;instructor;sana;ai;data science"],
+    ["What is Advanced Mathematics about?",
+     "Advanced Mathematics covers advanced mathematical concepts including calculus, linear algebra, statistics, and mathematical foundations for AI and data science applications.",
+     "advanced mathematics;math;mathematics;calculus;linear algebra;statistics;ai;data science"],
 
     # IT Department Questions
     ["Where are the IT labs?",
-     "IT labs are located in the Technology Building. Lab 1 is for Web Design, and other labs are shared with AI department for programming courses.",
+     "IT labs (Lab 2, Lab 3, Lab 4, Lab 5) are in the Building (G).",
      "it;information technology;labs;computer;location;web design"],
     ["What programming languages do IT students learn?",
      "IT students learn multiple languages including Python (Problem Solving), HTML/CSS/JavaScript (Web Design), and Object-Oriented Programming concepts.",
@@ -568,12 +947,12 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "Hall A11", "M Dana", "Artificial Intelligence"],
 
     # Monday - Group A1
-   
+
     ["AI-DS", "Data Communications", "Monday", "09:00", "11:00",
         "Lab 3", "M Dana - Group A2", "Artificial Intelligence"],
     ["AI-DS", "Problem Solving and Algorithms", "Monday", "12:00",
         "14:00", "Lab 4", "M Shima - Group A2", "Artificial Intelligence"],
-   
+
 
     # Tuesday
     ["AI-DS", "Introduction to Data Science", "Tuesday", "09:00", "11:00",
@@ -582,7 +961,7 @@ DEFAULT_SCHEDULE = pd.DataFrame([
         "14:00", "Hall A11", "M Sana", "Artificial Intelligence"],
 
     # Wednesday
-    
+
     ["AI-DS", "Introduction to Data Science", "Wednesday", "12:30", "14:30",
         "Lab 4", "M Hiwa - AI and DataScience", "Artificial Intelligence"],
 
@@ -825,14 +1204,20 @@ def load_schedule():
 faq_df, faq_src = load_faq()
 sched_df, sched_src = load_schedule()
 
-# Status indicator
-col1, col2, col3 = st.columns([2, 2, 1])
+# Status indicator with time and day
+col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
-    st.markdown(f'<span class="status-badge">📚 FAQ: {faq_src}</span>', unsafe_allow_html=True)
+    st.markdown(
+        f'<span class="status-badge">📚 FAQ: {faq_src}</span>', unsafe_allow_html=True)
 with col2:
-    st.markdown(f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
+    st.markdown(
+        f'<span class="status-badge">📅 Schedule: {sched_src}</span>', unsafe_allow_html=True)
 with col3:
-    st.markdown(f'<span class="status-badge">🕐 {datetime.now().strftime("%H:%M")}</span>', unsafe_allow_html=True)
+    current_time = datetime.now()
+    time_str = current_time.strftime("%H:%M")
+    day_str = current_time.strftime("%A")
+    st.markdown(
+        f'<span class="status-badge">🕐 {time_str} {day_str}</span>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -858,7 +1243,7 @@ def _tokenize(s: str):
 
 
 def faq_search(query: str, df: pd.DataFrame, vec, X):
-    """Search FAQ using hybrid TF-IDF and tag matching"""
+    """Search FAQ using hybrid TF-IDF and tag matching with improved accuracy"""
     q = query.lower().strip()
     if not q:
         return None, 0.0
@@ -876,8 +1261,33 @@ def faq_search(query: str, df: pd.DataFrame, vec, X):
     else:
         overlap = overlap_counts
 
-    # Combine scores (70% TF-IDF, 30% tag overlap)
-    combined = 0.7 * tfidf + 0.3 * overlap.values
+    # Direct keyword matching for better accuracy
+    keyword_scores = []
+    for idx, row in df.iterrows():
+        question_lower = row["question"].lower()
+        answer_lower = row["answer"].lower()
+        tags_lower = str(row["tags"]).lower()
+
+        # Check for exact keyword matches
+        score = 0
+        for token in qtok:
+            if token in question_lower:
+                score += 3  # Higher weight for question matches
+            if token in answer_lower:
+                score += 2  # Medium weight for answer matches
+            if token in tags_lower:
+                score += 1  # Lower weight for tag matches
+
+        keyword_scores.append(score)
+
+    keyword_scores = np.array(keyword_scores)
+    if keyword_scores.max() > 0:
+        keyword_scores = keyword_scores / keyword_scores.max()
+    else:
+        keyword_scores = np.zeros_like(keyword_scores)
+
+    # Combine scores (40% TF-IDF, 30% tag overlap, 30% keyword matching)
+    combined = 0.4 * tfidf + 0.3 * overlap.values + 0.3 * keyword_scores
     idx = combined.argmax()
     return int(idx), float(combined[idx])
 
@@ -919,13 +1329,25 @@ def _words(s: str):
 
 
 # ================== UI TABS - ALL VISIBLE ==================
-tab1, tab2, tab3, tab4 = st.tabs(["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable", "ℹ️ About"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(
+    ["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable", "🏛️ Department", "ℹ️ About"])
 
 # ========== FAQ TAB ==========
 with tab1:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### 📚 Ask a Question")
     st.write("*Get answers about library, registrar, wifi, printing, and more.*")
+
+    # Personalization
+    current_hour = datetime.now().hour
+    if 5 <= current_hour < 12:
+        greeting = "Good morning"
+    elif 12 <= current_hour < 17:
+        greeting = "Good afternoon"
+    else:
+        greeting = "Good evening"
+
+    st.markdown(f"**{greeting}, Student 👋**")
     st.markdown("<br>", unsafe_allow_html=True)
 
     q = st.text_input("Type your question here...", key="faq_q",
@@ -934,6 +1356,19 @@ with tab1:
     col1, col2 = st.columns([1, 4])
     with col1:
         ask_btn = st.button("🔍 Ask", key="faq_btn", use_container_width=True)
+
+    # Smart suggestions - removed for now to avoid session state conflicts
+    # st.markdown("**💡 Quick Questions:**")
+    # col1, col2, col3 = st.columns(3)
+    # with col1:
+    #     if st.button("What is my next class?", key="suggest1", use_container_width=True):
+    #         pass
+    # with col2:
+    #     if st.button("Who teaches Advanced Mathematics?", key="suggest2", use_container_width=True):
+    #         pass
+    # with col3:
+    #     if st.button("Where can I get wifi password?", key="suggest3", use_container_width=True):
+    #         pass
 
     if ask_btn:
         if not q.strip():
@@ -944,7 +1379,15 @@ with tab1:
                 if score > 0.25:
                     st.success(f"✅ Match found (confidence: {score:.0%})")
                     st.markdown("**Answer:**")
-                    st.info(faq_df.loc[idx, "answer"])
+                    # Glass card styling for answer
+                    st.markdown(f"""
+                    <div class="answer-box">
+                        {faq_df.loc[idx, "answer"]}
+                        <div style="margin-top: 1rem; font-size: 0.8rem; color: #ccc; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem;">
+                            📚 Source: FAQ Database (updated Oct 2025)
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 else:
                     st.warning(
                         "⚠️ Sorry, I couldn't find a good match. Try rephrasing or being more specific!")
@@ -952,7 +1395,6 @@ with tab1:
     # Show sample questions
     with st.expander("📋 Sample Questions"):
         st.markdown("- Where is the main library?")
-        st.markdown("- How do I get my student ID?")
         st.markdown("- What is the Wi-Fi network?")
         st.markdown("- Where can I print documents?")
         st.markdown("- How do I register for courses?")
@@ -997,31 +1439,39 @@ with tab2:
                     active_df["course_name"].str.lower().str.contains(q_lower, na=False) |
                     active_df["course_code"].str.lower().str.contains(q_lower, na=False) |
                     active_df["day"].str.lower().str.contains(q_lower, na=False) |
-                    active_df["lecturer"].str.lower().str.contains(q_lower, na=False)
+                    active_df["lecturer"].str.lower(
+                    ).str.contains(q_lower, na=False)
                 ]
 
                 if not matches.empty:
                     # Group by unique courses
-                    unique_courses = matches.groupby('course_code').first().reset_index()
+                    unique_courses = matches.groupby(
+                        'course_code').first().reset_index()
 
-                    st.success(f"✅ Found {len(unique_courses)} course(s) matching your search!")
+                    st.success(
+                        f"✅ Found {len(unique_courses)} course(s) matching your search!")
                     st.markdown("---")
 
                     # Display each unique course
                     for _, course in unique_courses.iterrows():
-                        st.markdown(f"### {course['course_code']} – {course['course_name']}")
-                        st.markdown(f"**📚 Department:** {course['department']}")
+                        st.markdown(
+                            f"### {course['course_code']} – {course['course_name']}")
+                        st.markdown(
+                            f"**📚 Department:** {course['department']}")
 
                         # Get all sessions for this course
-                        course_sessions = matches[matches['course_code'] == course['course_code']].sort_values('day')
+                        course_sessions = matches[matches['course_code']
+                                                  == course['course_code']].sort_values('day')
 
                         st.markdown("**📅 Schedule:**")
                         for _, session in course_sessions.iterrows():
-                            st.markdown(f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
+                            st.markdown(
+                                f"- **{session['day']}**: ⏰ {session['start_time']} - {session['end_time']} | 🏢 {session['hall']} | 👨‍🏫 {session['lecturer']}")
 
                         st.markdown("---")
                 else:
-                    st.warning("⚠️ No courses found matching your search. Try different keywords!")
+                    st.warning(
+                        "⚠️ No courses found matching your search. Try different keywords!")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== TIMETABLE TAB ==========
@@ -1045,14 +1495,16 @@ with tab3:
     with col2:
         # Day filter
         unique_days = list(set(sched_df["day"].dropna().tolist()))
-        day_order = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        day_order = ["Saturday", "Sunday", "Monday",
+                     "Tuesday", "Wednesday", "Thursday", "Friday"]
         sorted_days = [day for day in day_order if day in unique_days]
         day_options = ["All Days"] + sorted_days
         day_filter = st.selectbox("Day:", options=day_options, key="tt_day")
 
     with col3:
         # Sort option
-        sort_option = st.selectbox("Sort by:", ["Time", "Course Code", "Department"], key="tt_sort")
+        sort_option = st.selectbox(
+            "Sort by:", ["Time", "Course Code", "Department"], key="tt_sort")
 
     # Apply filters
     filtered_df = sched_df.copy()
@@ -1078,7 +1530,8 @@ with tab3:
     # Display as cards grouped by day
     if not filtered_df.empty:
         if day_filter == "All Days":
-            day_order = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+            day_order = ["Saturday", "Sunday", "Monday",
+                         "Tuesday", "Wednesday", "Thursday", "Friday"]
             for day in day_order:
                 day_classes = filtered_df[filtered_df["day"] == day]
                 if not day_classes.empty:
@@ -1089,7 +1542,7 @@ with tab3:
                         <div class="class-card">
                             <div style="display: grid; grid-template-columns: 2fr 2fr 1.5fr 1.5fr; gap: 1rem;">
                                 <div>
-                                    <strong style="font-size: 1.1rem; color: #667eea;">{row['course_code']}</strong><br>
+                                    <strong style="font-size: 1.1rem; color: #f5deb3;">{row['course_code']}</strong><br>
                                     <span style="color: #6c757d;">{row['course_name']}</span>
                                 </div>
                                 <div>
@@ -1112,7 +1565,7 @@ with tab3:
                 <div class="class-card">
                     <div style="display: grid; grid-template-columns: 2fr 2fr 1.5fr 1.5fr; gap: 1rem;">
                         <div>
-                            <strong style="font-size: 1.1rem; color: #667eea;">{row['course_code']}</strong><br>
+                            <strong style="font-size: 1.1rem; color: #f5deb3;">{row['course_code']}</strong><br>
                             <span style="color: #6c757d;">{row['course_name']}</span>
                         </div>
                         <div>
@@ -1152,13 +1605,48 @@ with tab3:
         st.info("No classes found with the selected filters.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ========== ABOUT TAB ==========
+# ========== DEPARTMENT TAB ==========
 with tab4:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown("### ℹ️ About UHD AI Chatbot")
-    
+    st.markdown("### 🏛️ University Departments (2025-2026)")
+    st.write("*Browse all available academic departments at UHD*")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Department list in a simpler format
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("""
+        **Medical & Health Sciences:**
+        - 🦷 Dentistry
+        - 👩‍⚕️ Nursing
+        - 🧪 Medical Laboratory Science
+        - 💊 Pharmacy
+        """)
+
+    with col2:
+        st.markdown("""
+        **Technology & Business:**
+        - 💻 Information Technology (IT)
+        - 🤖 Artificial Intelligence
+        - 💰 Accounting and Banking Science
+        - 📈 Business Administration
+        """)
+
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    **Liberal Arts & Law:**
+    - 📚 English Language
+    - ⚖️ Law
+    """)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== ABOUT TAB ==========
+with tab5:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
+    st.markdown("### ℹ️ About UHD AI Chatbot")
+
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #f5deb3 0%, #a0522d 100%); 
                 padding: 2rem; border-radius: 15px; color: white; margin: 1rem 0;">
         <h2 style="color: white; margin-top: 0;">🎓 UHD AI Chatbot</h2>
         <p style="font-size: 1.1rem; line-height: 1.6;">
@@ -1169,71 +1657,71 @@ with tab4:
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     st.markdown("### 👥 Development Team")
-    
+
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         st.markdown("""
-        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
-                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+        <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
             <div style="font-size: 3rem;">👨‍💻</div>
-            <h4 style="color: #667eea; margin: 0.5rem 0;">Dyar Abdulla</h4>
-            <p style="color: #6c757d; margin: 0;">Developer</p>
+            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Dyar Abdulla</h4>
+            <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col2:
         st.markdown("""
-        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
-                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+        <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
             <div style="font-size: 3rem;">👨‍💻</div>
-            <h4 style="color: #667eea; margin: 0.5rem 0;">Anas Sarkawt</h4>
-            <p style="color: #6c757d; margin: 0;">Developer</p>
+            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Anas Sarkawt</h4>
+            <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col3:
         st.markdown("""
-        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; 
-                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+        <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
             <div style="font-size: 3rem;">👨‍💻</div>
-            <h4 style="color: #667eea; margin: 0.5rem 0;">Drood Muhammed</h4>
-            <p style="color: #6c757d; margin: 0;">Developer</p>
+            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Drood Muhammed</h4>
+            <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
-    
+
     st.markdown("---")
-    
+
     st.markdown("### ✨ Features")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.markdown("""
         - 🔍 **Smart FAQ Search** - Ask questions about university services
         - 📅 **Class Schedule Finder** - Search courses by name, code, or day
         - 📋 **Complete Timetable** - View all classes with filters
         """)
-    
+
     with col2:
         st.markdown("""
         - 🎯 **AI-Powered Matching** - TF-IDF algorithm for accurate results
         - 📥 **Export Feature** - Download schedules as CSV
         - 🎨 **Beautiful Interface** - Modern and user-friendly design
         """)
-    
+
     st.markdown("---")
-    
+
     st.markdown("### 📊 Data Sources")
     st.markdown(f"""
     - **FAQ Database:** {faq_src} ({len(faq_df)} questions)
     - **Schedule Database:** {sched_src} ({len(sched_df)} classes)
     """)
-    
+
     st.markdown("---")
-    
+
     st.markdown("### 💡 How to Use")
     st.markdown("""
     1. **FAQ Tab**: Type your question about university services
@@ -1241,7 +1729,7 @@ with tab4:
     3. **Full Timetable Tab**: Browse all classes with filters
     4. **About Tab**: Learn more about this chatbot
     """)
-    
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer

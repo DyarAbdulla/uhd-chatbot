@@ -855,7 +855,7 @@ DEFAULT_FAQ = pd.DataFrame([
      "Go to the Registrar Office with your admission letter + one photo. IDs issued 9:00–14:00.",
      "registrar;id;student card"],
     ["What is the Wi-Fi network?",
-     "Free WiFi without password is available in the cafeteria under the G building",
+     "Free WiFi without password is available in the cafeteria under the C building",
      "wifi;internet;it;network;connection"],
     ["Where is the cafeteria?",
      "We have two cafeterias, the first is a coffee shop to the left of the entrance and the second is on the ground floor of the building (C) . Breakfast 8:00–10:30, lunch 12:00–15:00.",
@@ -1814,3 +1814,4 @@ st.markdown("""
     <p>Festival Demo Version | Developed with ❤️ by Dyar Abdulla, Anas Sarkawt & Drood Muhammed</p>
 </div>
 """, unsafe_allow_html=True)
+

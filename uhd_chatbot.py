@@ -13,185 +13,13 @@ import base64
 st.set_page_config(
     page_title="UHD AI Chatbot",
     page_icon="🎓",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="collapsed"
 )
 
 # ================== CUSTOM CSS ==================
 st.markdown("""
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-    /* Mobile Viewport and Responsive Design */
-    @media screen and (max-width: 768px) {
-        .main {
-            padding: 0.5rem !important;
-        }
-        
-        .header-container {
-            padding: 1.5rem !important;
-            margin-bottom: 1rem !important;
-        }
-        
-        .logo-container {
-            flex-direction: column !important;
-            text-align: center !important;
-            gap: 1rem !important;
-        }
-        
-        .university-name {
-            font-size: 1.5rem !important;
-            line-height: 1.3 !important;
-        }
-        
-        .subtitle {
-            font-size: 1rem !important;
-        }
-        
-        .content-card {
-            padding: 1rem !important;
-            margin-bottom: 1rem !important;
-        }
-        
-        .stTabs [data-baseweb="tab-list"] {
-            flex-direction: column !important;
-            gap: 0.5rem !important;
-            padding: 0.5rem !important;
-        }
-        
-        .stTabs [data-baseweb="tab"] {
-            padding: 0.75rem 1rem !important;
-            font-size: 14px !important;
-            text-align: center !important;
-        }
-        
-        .class-card {
-            padding: 1rem !important;
-        }
-        
-        .class-card div[style*="grid-template-columns"] {
-            grid-template-columns: 1fr !important;
-            gap: 0.5rem !important;
-        }
-        
-        .status-badge {
-            padding: 0.5rem 1rem !important;
-            font-size: 0.8rem !important;
-            margin-bottom: 0.5rem !important;
-        }
-        
-        .developer-card {
-            margin-bottom: 1rem !important;
-        }
-        
-        .footer {
-            padding: 1rem !important;
-            font-size: 0.8rem !important;
-        }
-        
-        /* Fix column layouts for mobile */
-        .stColumns > div {
-            width: 100% !important;
-            margin-bottom: 0.5rem !important;
-        }
-        
-        /* Make tables responsive */
-        .stDataFrame {
-            overflow-x: auto !important;
-        }
-        
-        /* Adjust button sizes */
-        .stButton button {
-            padding: 0.5rem 1rem !important;
-            font-size: 12px !important;
-        }
-        
-        /* Adjust input fields */
-        .stTextInput input, .stSelectbox select {
-            padding: 0.75rem !important;
-            font-size: 14px !important;
-        }
-        
-        /* Mobile-specific improvements */
-        .stMarkdown {
-            word-wrap: break-word !important;
-        }
-        
-        /* Make sure text doesn't overflow */
-        h1, h2, h3, h4, h5, h6 {
-            word-wrap: break-word !important;
-            hyphens: auto !important;
-        }
-        
-        /* Improve button layout on mobile */
-        .stButton {
-            width: 100% !important;
-        }
-        
-        /* Better spacing for mobile */
-        .stTabs [data-baseweb="tab-list"] {
-            margin: 0.5rem 0 !important;
-        }
-        
-        /* Fix any overflow issues */
-        * {
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* Improve mobile scrolling */
-        .main {
-            overflow-x: hidden !important;
-        }
-        
-        /* Better mobile spacing */
-        .stMarkdown {
-            margin-bottom: 0.5rem !important;
-        }
-        
-        /* Mobile-friendly expander */
-        .streamlit-expanderHeader {
-            padding: 0.75rem !important;
-            font-size: 14px !important;
-        }
-        
-        /* Mobile table improvements */
-        table {
-            font-size: 12px !important;
-        }
-        
-        /* Mobile status badges stack vertically */
-        .stColumns > div {
-            display: block !important;
-            width: 100% !important;
-        }
-        
-        /* Mobile status badges in single column */
-        .stColumns {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 0.5rem !important;
-        }
-    }
-    
-    /* Tablet responsiveness */
-    @media screen and (min-width: 769px) and (max-width: 1024px) {
-        .header-container {
-            padding: 2rem !important;
-        }
-        
-        .university-name {
-            font-size: 1.8rem !important;
-        }
-        
-        .content-card {
-            padding: 1.5rem !important;
-        }
-        
-        .class-card div[style*="grid-template-columns"] {
-            grid-template-columns: 1fr 1fr !important;
-        }
-    }
-    
     /* Main container styling - Campus Background Theme with Enhanced Overlay */
     .main {
         padding-top: 1rem;
@@ -1386,7 +1214,7 @@ def load_schedule():
 faq_df, faq_src = load_faq()
 sched_df, sched_src = load_schedule()
 
-# Status indicator with time and day - Mobile responsive
+# Status indicator with time and day
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     st.markdown(
@@ -1907,16 +1735,14 @@ with tab5:
 
     st.markdown("### 👥 Development Team")
 
-    # Mobile-responsive developer cards
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
-                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);
-                    margin-bottom: 1rem;">
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
             <div style="font-size: 3rem;">👨‍💻</div>
-            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2; word-wrap: break-word;">Dyar Abdulla</h4>
+            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Dyar Abdulla</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1924,10 +1750,9 @@ with tab5:
     with col2:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
-                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);
-                    margin-bottom: 1rem;">
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
             <div style="font-size: 3rem;">👨‍💻</div>
-            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2; word-wrap: break-word;">Anas Sarkawt</h4>
+            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Anas Sarkawt</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1935,10 +1760,9 @@ with tab5:
     with col3:
         st.markdown("""
         <div class="developer-card" style="background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 12px; 
-                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);
-                    margin-bottom: 1rem;">
+                    text-align: center; box-shadow: 0 3px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
             <div style="font-size: 3rem;">👨‍💻</div>
-            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2; word-wrap: break-word;">Drood Muhammed</h4>
+            <h4 style="color: #ffffff; margin: 0.5rem 0; line-height: 1.2;">Drood Muhammed</h4>
             <p style="color: #e0e0e0; margin: 0;">Developer</p>
         </div>
         """, unsafe_allow_html=True)

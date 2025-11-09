@@ -968,7 +968,7 @@ def try_send_feedback_email(entry: dict):
         return False, "SMTP settings not configured."
 
     smtp_conf = st.secrets["smtp"]
-    required_keys = {"user", "password", "to"}
+    required_keys = {"user", "password"}
     if not required_keys.issubset(smtp_conf.keys()):
         return False, "SMTP credentials incomplete."
 
@@ -976,9 +976,11 @@ def try_send_feedback_email(entry: dict):
     port = int(smtp_conf.get("port", 587))
     use_tls = smtp_conf.get("use_tls", True)
     sender = smtp_conf.get("sender", smtp_conf["user"])
-    recipients = smtp_conf["to"]
+    recipients = smtp_conf.get("to", FEEDBACK_DEFAULT_RECIPIENTS)
     if isinstance(recipients, str):
         recipients = [r.strip() for r in recipients.split(",") if r.strip()]
+    if not recipients:
+        recipients = [FEEDBACK_DEFAULT_RECIPIENTS]
 
     message = format_feedback_email(entry)
     message["From"] = sender
@@ -1054,7 +1056,8 @@ if hasattr(st, "secrets"):
     except Exception:
         ADMIN_SETTINGS = {}
 
-FEEDBACK_ADMIN_KEY = ADMIN_SETTINGS.get("feedback_key")
+FEEDBACK_DEFAULT_RECIPIENTS = ADMIN_SETTINGS.get(
+    "feedback_email", "dyarabdula15@gmail.com")
 
 # ================== DEFAULT DATA ==================
 DEFAULT_FAQ = pd.DataFrame([
@@ -2083,44 +2086,9 @@ with tab6:
                     st.error("🚫 Sorry, we couldn't save your message. Please try again later.")
                     st.caption(f"Error details: {exc}")
 
-    admin_unlocked = False
-    if FEEDBACK_ADMIN_KEY:
-        if "feedback_admin_unlocked" not in st.session_state:
-            st.session_state.feedback_admin_unlocked = False
-
-        if not st.session_state.feedback_admin_unlocked:
-            with st.expander("🔐 Admin access", expanded=False):
-                with st.form("feedback_admin_unlock"):
-                    provided_key = st.text_input(
-                        "Enter admin access key", type="password")
-                    unlock_attempt = st.form_submit_button("Unlock")
-
-                if unlock_attempt:
-                    if provided_key == FEEDBACK_ADMIN_KEY:
-                        st.session_state.feedback_admin_unlocked = True
-                        st.success("Admin view unlocked for this session.")
-                    else:
-                        st.error("Incorrect access key. Please try again.")
-
-        admin_unlocked = st.session_state.feedback_admin_unlocked
-    else:
-        admin_unlocked = True
-
     if FEEDBACK_PATH.exists():
-        if admin_unlocked:
-            with st.expander("🗂️ View recent feedback (admins only)"):
-                try:
-                    recent_feedback = pd.read_csv(FEEDBACK_PATH).tail(5)
-                    st.dataframe(
-                        recent_feedback,
-                        hide_index=True,
-                        use_container_width=True
-                    )
-                except Exception:
-                    st.warning("Unable to display feedback history right now.")
-        elif FEEDBACK_ADMIN_KEY:
-            st.caption(
-                "🔒 Enter the admin access key above to unlock feedback history."
-            )
+        st.caption(
+            "🗂️ Feedback entries are stored securely and emailed to the UHD team."
+        )
 
     st.markdown('</div>', unsafe_allow_html=True)

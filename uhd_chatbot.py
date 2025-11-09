@@ -68,6 +68,66 @@ st.markdown("""
         position: relative;
         overflow: hidden;
     }
+
+    .update-banner {
+        background: linear-gradient(135deg, rgba(135, 206, 235, 0.85) 0%, rgba(245, 222, 179, 0.92) 100%);
+        backdrop-filter: blur(15px);
+        padding: 1.25rem 2rem;
+        border-radius: 18px;
+        margin-bottom: 2rem;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #11364d !important;
+    }
+
+    .update-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+        animation: banner-shimmer 4s ease-in-out infinite;
+    }
+
+    .update-banner-icon {
+        font-size: 1.8rem;
+        animation: pulse 2.8s ease-in-out infinite;
+        color: #0b2b3c !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    .update-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        position: relative;
+        z-index: 1;
+        color: #11364d !important;
+    }
+
+    .update-text strong {
+        font-size: 1.1rem;
+        letter-spacing: 0.6px;
+        color: #0b2b3c !important;
+    }
+
+    .update-text span {
+        font-size: 0.95rem;
+        color: #134a66 !important;
+    }
+
+    @keyframes banner-shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
     
     .header-container::before {
         content: '';
@@ -777,6 +837,92 @@ st.markdown("""
         100% { left: 100%; }
     }
 
+    /* ========== RESPONSIVE ADJUSTMENTS ========== */
+    @media (max-width: 768px) {
+        .main {
+            padding: 0.5rem !important;
+        }
+
+        .header-container {
+            padding: 1.5rem !important;
+            text-align: center !important;
+        }
+
+        .logo-container {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+
+        .logo-container img {
+            width: 80px !important;
+        }
+
+        .university-name {
+            font-size: 1.6rem !important;
+        }
+
+        .subtitle {
+            font-size: 1rem !important;
+        }
+
+        .update-banner {
+            flex-direction: column !important;
+            text-align: center !important;
+            gap: 0.5rem !important;
+            padding: 1rem 1.25rem !important;
+        }
+
+        .update-banner-icon {
+            font-size: 1.4rem !important;
+        }
+
+        .content-card,
+        .glass-card {
+            padding: 1.25rem !important;
+        }
+
+        .stTabs [data-baseweb="tab-list"] {
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            gap: 0.75rem !important;
+        }
+
+        .stTabs [data-baseweb="tab"] {
+            width: calc(50% - 0.75rem) !important;
+            text-align: center !important;
+            padding: 0.6rem 0.75rem !important;
+        }
+
+        .status-badge {
+            font-size: 0.9rem !important;
+            padding: 0.6rem 1.2rem !important;
+        }
+
+        .class-card {
+            padding: 1.25rem !important;
+        }
+
+        .class-card div[style*="grid-template-columns"] {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem !important;
+        }
+
+        .class-card strong {
+            font-size: 1rem !important;
+        }
+
+        .stColumns {
+            display: block !important;
+        }
+
+        .stColumns > div {
+            width: 100% !important;
+            margin-bottom: 1rem !important;
+        }
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -806,6 +952,17 @@ def get_base64_image(image_path):
     except:
         return None
 
+
+# ================== TOP UPDATE BANNER ==================
+st.markdown("""
+<div class="update-banner">
+    <div class="update-banner-icon">🌿</div>
+    <div class="update-text">
+        <strong>Fresh updates are on the way</strong>
+        <span>The best update will be available soon.</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ================== HEADER ==================
 LOGO_FILE = get_logo()
@@ -1692,27 +1849,22 @@ with tab4:
 
     with col1:
         st.markdown("""
-        **Medical & Health Sciences:**
-        - 🦷 Dentistry
+        **Health & Medical Sciences**
+        - 💊 Pharmaceuticals
         - 👩‍⚕️ Nursing
-        - 🧪 Medical Laboratory Science
-        - 💊 Pharmacy
+        - 🧬 Medical Laboratory Science
+        - ⚖️ Law
+        - 📚 English Language
         """)
 
     with col2:
         st.markdown("""
-        **Technology & Business:**
+        **Technology & Administration**
+        - 🤖 Artificial Intelligence and Data Science
         - 💻 Information Technology (IT)
-        - 🤖 Artificial Intelligence
-        - 💰 Accounting and Banking Science
-        - 📈 Business Administration
+        - 💰 Accounting
+        - 🏛️ Labor Administration
         """)
-
-    st.markdown("""
-    **Liberal Arts & Law:**
-    - 📚 English Language
-    - ⚖️ Law
-    """)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== ABOUT TAB ==========
@@ -1806,11 +1958,3 @@ with tab5:
     """)
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-# Footer
-st.markdown("""
-<div class="footer">
-    <p><strong>© 2024 University of Human Development</strong></p>
-    <p>Festival Demo Version | Developed with ❤️ by Dyar Abdulla, Anas Sarkawt & Drood Muhammed</p>
-</div>
-""", unsafe_allow_html=True)

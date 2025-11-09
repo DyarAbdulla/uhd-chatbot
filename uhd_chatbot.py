@@ -1048,6 +1048,10 @@ SCHED_PATH = SCRIPT_DIR / "schedule.csv"
 
 # Feedback storage at project root
 FEEDBACK_PATH = SCRIPT_DIR / "report_and_feedback.csv"
+# Ensure feedback file exists with headers
+if not FEEDBACK_PATH.exists():
+    PD_COLUMNS = ["timestamp", "name", "contact", "topic", "message"]
+    pd.DataFrame(columns=PD_COLUMNS).to_csv(FEEDBACK_PATH, index=False, encoding="utf-8")
 
 ADMIN_SETTINGS = {}
 if hasattr(st, "secrets"):

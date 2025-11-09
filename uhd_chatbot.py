@@ -1046,10 +1046,8 @@ else:
 FAQ_PATH = SCRIPT_DIR / "faq.csv"
 SCHED_PATH = SCRIPT_DIR / "schedule.csv"
 
-# Feedback storage in user Documents/UHD_Chatbot/feedback_log.csv
-FEEDBACK_DIR = Path.home() / "Documents" / "UHD_Chatbot"
-FEEDBACK_DIR.mkdir(parents=True, exist_ok=True)
-FEEDBACK_PATH = FEEDBACK_DIR / "feedback_log.csv"
+# Feedback storage at project root
+FEEDBACK_PATH = SCRIPT_DIR / "report_and_feedback.csv"
 
 ADMIN_SETTINGS = {}
 if hasattr(st, "secrets"):
@@ -2097,7 +2095,7 @@ with tab6:
 
     if FEEDBACK_PATH.exists():
         st.caption(
-            f"🗂️ Feedback entries are saved locally to `{FEEDBACK_PATH}` and emailed to the UHD team."
+            f"🗂️ Feedback entries are saved locally to `{FEEDBACK_PATH.name}` and emailed to the UHD team."
         )
     else:
         st.info("No feedback has been submitted yet.")

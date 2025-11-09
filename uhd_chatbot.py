@@ -2098,6 +2098,14 @@ with tab6:
                     st.caption(f"Error details: {exc}")
 
     if FEEDBACK_PATH.exists():
+        with open(FEEDBACK_PATH, "rb") as fb_file:
+            st.download_button(
+                "⬇️ Download feedback log",
+                data=fb_file,
+                file_name="report_and_feedback.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
         st.caption(
             f"🗂️ Feedback entries are saved locally to `{FEEDBACK_PATH.name}` and emailed to the UHD team."
         )

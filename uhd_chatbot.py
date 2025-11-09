@@ -1045,7 +1045,11 @@ else:
 # ================== FILE PATHS ==================
 FAQ_PATH = SCRIPT_DIR / "faq.csv"
 SCHED_PATH = SCRIPT_DIR / "schedule.csv"
-FEEDBACK_PATH = SCRIPT_DIR / "feedback.csv"
+
+# Feedback storage in user Documents/UHD_Chatbot/feedback_log.csv
+FEEDBACK_DIR = Path.home() / "Documents" / "UHD_Chatbot"
+FEEDBACK_DIR.mkdir(parents=True, exist_ok=True)
+FEEDBACK_PATH = FEEDBACK_DIR / "feedback_log.csv"
 
 ADMIN_SETTINGS = {}
 if hasattr(st, "secrets"):
@@ -2058,16 +2062,21 @@ with tab6:
                     "message": message.strip()
                 }
                 try:
+                    entry_df = pd.DataFrame([entry])
+                    header_needed = True
                     if FEEDBACK_PATH.exists():
-                        feedback_history = pd.read_csv(FEEDBACK_PATH)
-                        feedback_history = pd.concat(
-                            [feedback_history, pd.DataFrame([entry])],
-                            ignore_index=True
-                        )
-                    else:
-                        feedback_history = pd.DataFrame([entry])
+                        try:
+                            header_needed = FEEDBACK_PATH.stat().st_size == 0
+                        except OSError:
+                            header_needed = True
 
-                    feedback_history.to_csv(FEEDBACK_PATH, index=False)
+                    entry_df.to_csv(
+                        FEEDBACK_PATH,
+                        mode="a",
+                        index=False,
+                        header=header_needed,
+                        encoding="utf-8"
+                    )
                     email_sent = False
                     email_error = None
                     email_status = try_send_feedback_email(entry)
@@ -2088,7 +2097,7 @@ with tab6:
 
     if FEEDBACK_PATH.exists():
         st.caption(
-            "🗂️ Feedback entries are saved locally to `feedback.csv` and emailed to the UHD team."
+            f"🗂️ Feedback entries are saved locally to `{FEEDBACK_PATH}` and emailed to the UHD team."
         )
     else:
         st.info("No feedback has been submitted yet.")

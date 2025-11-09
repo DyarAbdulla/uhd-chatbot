@@ -8,6 +8,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
 import base64
+import smtplib
+from email.mime.text import MIMEText
 
 # ================== PAGE CONFIG ==================
 st.set_page_config(
@@ -734,10 +736,15 @@ st.markdown("""
          border-radius: 12px !important;
          color: #ffffff !important;
          font-weight: 600 !important;
-         padding: 0.75rem 1.5rem !important;
+         padding: 12px 24px !important;
          margin: 0 !important;
          transition: all 0.3s ease !important;
          position: relative !important;
+         min-width: 180px !important;
+         display: inline-flex !important;
+         justify-content: center !important;
+         align-items: center !important;
+         white-space: nowrap !important;
      }
      
      .stTabs [data-baseweb="tab"]:hover {
@@ -748,26 +755,6 @@ st.markdown("""
          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
      }
      
-     .stTabs [aria-selected="true"] {
-         background: rgba(255, 255, 255, 0.2) !important;
-         backdrop-filter: blur(25px) !important;
-         border: 1px solid rgba(255, 255, 255, 0.4) !important;
-         box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
-     }
-     
-     .stTabs [aria-selected="true"]::after {
-         content: '' !important;
-         position: absolute !important;
-         bottom: -2px !important;
-         left: 50% !important;
-         transform: translateX(-50%) !important;
-         width: 60% !important;
-         height: 3px !important;
-         background: linear-gradient(90deg, #ff6b6b, #ff8e8e) !important;
-         border-radius: 2px !important;
-         box-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
-     }
-    
     .content-card::before {
         content: '';
         position: absolute;
@@ -889,9 +876,10 @@ st.markdown("""
         }
 
         .stTabs [data-baseweb="tab"] {
-            width: calc(50% - 0.75rem) !important;
+            width: 100% !important;
+            min-width: 0 !important;
             text-align: center !important;
-            padding: 0.6rem 0.75rem !important;
+            padding: 12px 20px !important;
         }
 
         .status-badge {
@@ -953,6 +941,59 @@ def get_base64_image(image_path):
         return None
 
 
+# ================== EMAIL HELPERS ==================
+def format_feedback_email(entry: dict) -> MIMEText:
+    """Generate a MIMEText email for a feedback entry"""
+    body = f"""
+New UHD Chatbot feedback received:
+
+Timestamp: {entry.get('timestamp')}
+Name: {entry.get('name') or 'Anonymous'}
+Contact: {entry.get('contact') or 'Not provided'}
+Topic: {entry.get('topic')}
+
+Message:
+{entry.get('message')}
+""".strip()
+
+    msg = MIMEText(body, "plain", "utf-8")
+    msg["Subject"] = f"[UHD Chatbot] New feedback: {entry.get('topic')}"
+    return msg
+
+
+def try_send_feedback_email(entry: dict):
+    """Send email notification if SMTP secrets are configured"""
+    if not hasattr(st, "secrets") or "smtp" not in st.secrets:
+        return False, "SMTP settings not configured."
+
+    smtp_conf = st.secrets["smtp"]
+    required_keys = {"user", "password", "to"}
+    if not required_keys.issubset(smtp_conf.keys()):
+        return False, "SMTP credentials incomplete."
+
+    server = smtp_conf.get("server", "smtp.gmail.com")
+    port = int(smtp_conf.get("port", 587))
+    use_tls = smtp_conf.get("use_tls", True)
+    sender = smtp_conf.get("sender", smtp_conf["user"])
+    recipients = smtp_conf["to"]
+    if isinstance(recipients, str):
+        recipients = [r.strip() for r in recipients.split(",") if r.strip()]
+
+    message = format_feedback_email(entry)
+    message["From"] = sender
+    message["To"] = ", ".join(recipients)
+
+    try:
+        with smtplib.SMTP(server, port, timeout=15) as smtp:
+            if use_tls:
+                smtp.starttls()
+            smtp.login(smtp_conf["user"], smtp_conf["password"])
+            smtp.send_message(message, from_addr=sender, to_addrs=recipients)
+        return True, None
+    except Exception as exc:
+        return False, str(exc)
+
+
 # ================== TOP UPDATE BANNER ==================
 st.markdown("""
 <div class="update-banner">
@@ -1001,6 +1042,7 @@ else:
 # ================== FILE PATHS ==================
 FAQ_PATH = SCRIPT_DIR / "faq.csv"
 SCHED_PATH = SCRIPT_DIR / "schedule.csv"
+FEEDBACK_PATH = SCRIPT_DIR / "feedback.csv"
 
 # ================== DEFAULT DATA ==================
 DEFAULT_FAQ = pd.DataFrame([
@@ -1560,8 +1602,8 @@ def _words(s: str):
 
 
 # ================== UI TABS - ALL VISIBLE ==================
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
-    ["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable", "🏛️ Department", "ℹ️ About"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+    ["❓ FAQ", "📅 Class Schedule", "📋 Full Timetable", "🏛️ Department", "ℹ️ About", "💡 Feedback"])
 
 # ========== FAQ TAB ==========
 with tab1:
@@ -1956,5 +1998,89 @@ with tab5:
     3. **Full Timetable Tab**: Browse all classes with filters
     4. **About Tab**: Learn more about this chatbot
     """)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== FEEDBACK TAB ==========
+with tab6:
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
+    st.markdown("### 💡 Share Feedback or Report an Issue")
+    st.write("*Let us know about any problems, ideas, or requests so we can improve the UHD chatbot experience.*")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    with st.form("feedback_form"):
+        col1, col2 = st.columns(2)
+        with col1:
+            name = st.text_input("Name (optional)", max_chars=60)
+        with col2:
+            contact = st.text_input("Email or phone (optional)", max_chars=60)
+
+        topic = st.selectbox("What is this about?", [
+            "General suggestion",
+            "Bug report",
+            "Missing information",
+            "Design / usability",
+            "Other"
+        ])
+        message = st.text_area("Your message", height=180,
+                               placeholder="Tell us what happened or what you would like to see improved.")
+        agree = st.checkbox(
+            "I agree that my feedback may be reviewed by the UHD chatbot team.")
+
+        submitted = st.form_submit_button("📨 Send feedback", use_container_width=True)
+
+        if submitted:
+            if not message.strip():
+                st.warning("⚠️ Please add some details to your message before sending.")
+            elif not agree:
+                st.info("ℹ️ Please confirm that we may review your feedback.")
+            else:
+                entry = {
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "name": name.strip(),
+                    "contact": contact.strip(),
+                    "topic": topic,
+                    "message": message.strip()
+                }
+                try:
+                    if FEEDBACK_PATH.exists():
+                        feedback_history = pd.read_csv(FEEDBACK_PATH)
+                        feedback_history = pd.concat(
+                            [feedback_history, pd.DataFrame([entry])],
+                            ignore_index=True
+                        )
+                    else:
+                        feedback_history = pd.DataFrame([entry])
+
+                    feedback_history.to_csv(FEEDBACK_PATH, index=False)
+                    email_sent = False
+                    email_error = None
+                    email_status = try_send_feedback_email(entry)
+                    if isinstance(email_status, tuple):
+                        email_sent, email_error = email_status
+                    elif isinstance(email_status, bool):
+                        email_sent = email_status
+
+                    if email_sent:
+                        st.success("✅ Thank you! Your feedback has been recorded and emailed to the team.")
+                    else:
+                        st.success("✅ Thank you! Your feedback has been recorded.")
+                        if email_error:
+                            st.caption(f"(Email notification skipped: {email_error})")
+                except Exception as exc:
+                    st.error("🚫 Sorry, we couldn't save your message. Please try again later.")
+                    st.caption(f"Error details: {exc}")
+
+    if FEEDBACK_PATH.exists():
+        with st.expander("🗂️ View recent feedback (admins only)"):
+            try:
+                recent_feedback = pd.read_csv(FEEDBACK_PATH).tail(5)
+                st.dataframe(
+                    recent_feedback,
+                    hide_index=True,
+                    use_container_width=True
+                )
+            except Exception:
+                st.warning("Unable to display feedback history right now.")
 
     st.markdown('</div>', unsafe_allow_html=True)

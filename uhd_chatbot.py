@@ -4,6 +4,7 @@ import pandas as pd
 import re
 import numpy as np
 from pathlib import Path
+from collections.abc import Mapping
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
@@ -1044,6 +1045,17 @@ FAQ_PATH = SCRIPT_DIR / "faq.csv"
 SCHED_PATH = SCRIPT_DIR / "schedule.csv"
 FEEDBACK_PATH = SCRIPT_DIR / "feedback.csv"
 
+ADMIN_SETTINGS = {}
+if hasattr(st, "secrets"):
+    try:
+        admin_section = st.secrets.get("admin", {})
+        if isinstance(admin_section, Mapping):
+            ADMIN_SETTINGS = dict(admin_section)
+    except Exception:
+        ADMIN_SETTINGS = {}
+
+FEEDBACK_ADMIN_KEY = ADMIN_SETTINGS.get("feedback_key")
+
 # ================== DEFAULT DATA ==================
 DEFAULT_FAQ = pd.DataFrame([
     # General University Questions
@@ -2071,16 +2083,44 @@ with tab6:
                     st.error("🚫 Sorry, we couldn't save your message. Please try again later.")
                     st.caption(f"Error details: {exc}")
 
+    admin_unlocked = False
+    if FEEDBACK_ADMIN_KEY:
+        if "feedback_admin_unlocked" not in st.session_state:
+            st.session_state.feedback_admin_unlocked = False
+
+        if not st.session_state.feedback_admin_unlocked:
+            with st.expander("🔐 Admin access", expanded=False):
+                with st.form("feedback_admin_unlock"):
+                    provided_key = st.text_input(
+                        "Enter admin access key", type="password")
+                    unlock_attempt = st.form_submit_button("Unlock")
+
+                if unlock_attempt:
+                    if provided_key == FEEDBACK_ADMIN_KEY:
+                        st.session_state.feedback_admin_unlocked = True
+                        st.success("Admin view unlocked for this session.")
+                    else:
+                        st.error("Incorrect access key. Please try again.")
+
+        admin_unlocked = st.session_state.feedback_admin_unlocked
+    else:
+        admin_unlocked = True
+
     if FEEDBACK_PATH.exists():
-        with st.expander("🗂️ View recent feedback (admins only)"):
-            try:
-                recent_feedback = pd.read_csv(FEEDBACK_PATH).tail(5)
-                st.dataframe(
-                    recent_feedback,
-                    hide_index=True,
-                    use_container_width=True
-                )
-            except Exception:
-                st.warning("Unable to display feedback history right now.")
+        if admin_unlocked:
+            with st.expander("🗂️ View recent feedback (admins only)"):
+                try:
+                    recent_feedback = pd.read_csv(FEEDBACK_PATH).tail(5)
+                    st.dataframe(
+                        recent_feedback,
+                        hide_index=True,
+                        use_container_width=True
+                    )
+                except Exception:
+                    st.warning("Unable to display feedback history right now.")
+        elif FEEDBACK_ADMIN_KEY:
+            st.caption(
+                "🔒 Enter the admin access key above to unlock feedback history."
+            )
 
     st.markdown('</div>', unsafe_allow_html=True)

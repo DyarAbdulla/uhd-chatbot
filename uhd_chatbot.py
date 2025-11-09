@@ -1058,7 +1058,6 @@ if hasattr(st, "secrets"):
 
 FEEDBACK_DEFAULT_RECIPIENTS = ADMIN_SETTINGS.get(
     "feedback_email", "dyarabdula15@gmail.com")
-FEEDBACK_ADMIN_KEY = ADMIN_SETTINGS.get("feedback_key")
 
 # ================== DEFAULT DATA ==================
 DEFAULT_FAQ = pd.DataFrame([
@@ -2087,53 +2086,10 @@ with tab6:
                     st.error("🚫 Sorry, we couldn't save your message. Please try again later.")
                     st.caption(f"Error details: {exc}")
 
-    admin_unlocked = False
-    if FEEDBACK_ADMIN_KEY:
-        if "feedback_admin_unlocked" not in st.session_state:
-            st.session_state.feedback_admin_unlocked = False
-
-        if not st.session_state.feedback_admin_unlocked:
-            with st.expander("🔐 Admin access", expanded=False):
-                with st.form("feedback_admin_unlock"):
-                    provided_key = st.text_input(
-                        "Enter admin access key", type="password")
-                    unlock_attempt = st.form_submit_button("Unlock")
-
-                if unlock_attempt:
-                    if provided_key == FEEDBACK_ADMIN_KEY:
-                        st.session_state.feedback_admin_unlocked = True
-                        st.success("Admin tools unlocked for this session.")
-                    else:
-                        st.error("Incorrect access key. Please try again.")
-
-        admin_unlocked = st.session_state.feedback_admin_unlocked
-    else:
-        admin_unlocked = True
-
     if FEEDBACK_PATH.exists():
-        if admin_unlocked:
-            with st.expander("🗂️ Recent feedback (admin)", expanded=False):
-                try:
-                    recent_feedback = pd.read_csv(FEEDBACK_PATH)
-                    st.dataframe(
-                        recent_feedback.tail(10),
-                        hide_index=True,
-                        use_container_width=True
-                    )
-                    st.download_button(
-                        "⬇️ Download full feedback CSV",
-                        data=recent_feedback.to_csv(index=False),
-                        file_name="feedback_export.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-                except Exception as exc:
-                    st.warning("Unable to display feedback history right now.")
-                    st.caption(f"Error details: {exc}")
-        else:
-            st.caption(
-                "🔒 Enter the admin access key to view or download feedback."
-            )
+        st.caption(
+            "🗂️ Feedback entries are saved locally to `feedback.csv` and emailed to the UHD team."
+        )
     else:
         st.info("No feedback has been submitted yet.")
 
